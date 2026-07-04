@@ -141,11 +141,12 @@ function findAgent(name) {
   );
 }
 
-// ENDPOINT: Chatta med Iris
+// ENDPOINT: Chatta med Iris (eller custom chief)
 app.post('/api/chat', async (req, res) => {
   try {
-    const { messages } = req.body;
-    const irisReply = await callClaude(AGENTS.iris.system, messages);
+    const { messages, system } = req.body;
+    const activeSystem = system || AGENTS.iris.system;
+    const irisReply = await callClaude(activeSystem, messages);
     const delegations = parseDelegations(irisReply);
 
     const agentResponses = [];
