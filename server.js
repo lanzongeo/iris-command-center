@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer/lib/nodemailer');
+const nodemailer = require('nodemailer');
 const express = require('express');
 const cors = require('cors');
 const https = require('https');
@@ -72,7 +72,7 @@ async function callClaude(system, messages, maxTokens = 1000) {
   });
 }
 
-// Skicka mejl via Nodemailer (one.com SMTP port 587)
+// Skicka mejl via Resend API
 async function sendEmailSMTP(to, subject, bodyText, fromName) {
   return new Promise((resolve, reject) => {
     const body = JSON.stringify({
@@ -103,6 +103,29 @@ async function sendEmailSMTP(to, subject, bodyText, fromName) {
     req.write(body);
     req.end();
   });
+}
+
+// Kolla om agent-svar innehåller mejlinnehåll
+function detectEmailContent(text) {
+  const emailSignals = ['till:', 'från:', 'ämne:', 'hej!', 'med vänliga hälsningar', 'subject:', 'dear', 'välkommen'];
+  const lower = text.toLowerCase();
+  return emailSignals.some(signal => lower.includes(signal));
+}
+
+// Extrahera mejldelar från agentens svar
+function extractEmailParts(text, defaultTo) {
+  const toMatch = text.match(/till:\s*([^
+]+)/i);
+  const subjectMatch = text.match(/ämne:\s*([^
+]+)/i) || text.match(/subject:\s*([^
+]+)/i);
+  const to = toMatch ? toMatch[1].trim() : defaultTo || '';
+  const subject = subjectMatch ? subjectMatch[1].trim() : 'Meddelande från My-time';
+  const bodyLines = text.split('\n').filter(l => 
+    !l.match(/^(till|från|ämne|subject|to|from):/i)
+  );
+  const html = bodyLines.join('<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  return { to, subject, html };
 }
 
 // Parsea delegationer
@@ -154,9 +177,47 @@ app.post('/api/chat', async (req, res) => {
       }
     }
 
-    res.json({ iris: irisReply, delegations, agents: agentResponses });
+    // Detektera och skicka mejl automatiskt
+    const emailDrafts = [];
+    const sentEmails = [];
+
+    for (const r of agentResponses) {
+      if (detectEmailContent(r.reply)) {
+        const parts = extractEmailParts(r.reply, null);
+        if (parts.to && parts.to.includes('@')) {
+          try {
+            await sendEmailSMTP(parts.to, parts.subject, parts.html, 'My-time');
+            sentEmails.push({ agent: r.name, to: parts.to, subject: parts.subject });
+            console.log(`Mejl skickat automatiskt till ${parts.to}`);
+          } catch(e) {
+            console.error('Auto-email error:', e.message);
+            emailDrafts.push({ agent: r.name, ...parts, fullText: r.reply, error: e.message });
+          }
+        } else {
+          emailDrafts.push({ agent: r.name, ...parts, fullText: r.reply });
+        }
+      }
+    }
+
+    res.json({ iris: irisReply, delegations, agents: agentResponses, emailDrafts, sentEmails });
   } catch(e) {
     console.error(e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ENDPOINT: Godkänn och skicka mejl
+app.post('/api/approve-email', async (req, res) => {
+  try {
+    const { to, subject, html, fromName } = req.body;
+    if (!to || !subject || !html) {
+      return res.status(400).json({ error: 'to, subject och html krävs' });
+    }
+    const result = await sendEmailSMTP(to, subject, html, fromName || 'Iris');
+    console.log(`Mejl skickat till ${to}: ${subject}`);
+    res.json({ success: true, result });
+  } catch(e) {
+    console.error('Approve email error:', e);
     res.status(500).json({ error: e.message });
   }
 });
