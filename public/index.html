@@ -1,1 +1,557 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Command Center · Iris</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f0f;--s1:#1a1a1a;--s2:#222;--s3:#2a2a2a;
+  --b1:#2e2e2e;--b2:#3a3a3a;--t1:#e8e8e8;--t2:#999;--t3:#555;
+  --iris:#7F77DD;--id:rgba(127,119,221,0.12);--im:rgba(127,119,221,0.25);
+  --green:#1D9E75;--gd:rgba(29,158,117,0.12);
+  --amber:#BA7517;--ad:rgba(186,117,23,0.12);
+  --r:8px;--f:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif
+}
+body{font-family:var(--f);background:var(--bg);color:var(--t1);height:100vh;display:flex;overflow:hidden;font-size:14px}
+
+.sidebar{width:220px;background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column;flex-shrink:0}
+.sb-head{padding:14px 16px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:10px}
+.logo{width:32px;height:32px;border-radius:8px;background:var(--iris);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;flex-shrink:0}
+.logo-t{font-size:13px;font-weight:600}.logo-s{font-size:10px;color:var(--t3);margin-top:1px}
+.sb-sec{padding:10px 8px 4px}
+.sb-lbl{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;padding:0 8px 4px}
+.ni{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:var(--r);cursor:pointer;transition:background .12s;margin-bottom:2px}
+.ni:hover{background:var(--s2)}.ni.active{background:var(--id)}
+.ni.active .nn{color:#a09ae8}
+.nav-av{width:24px;height:24px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.nn{font-size:12px;font-weight:500}.ns{font-size:10px;color:var(--t3);margin-top:1px}
+.na{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--r);cursor:pointer;border:1px dashed var(--b2);margin:4px 0;color:var(--t3);font-size:12px;transition:all .12s}
+.na:hover{border-color:var(--iris);color:var(--iris)}
+.sb-foot{margin-top:auto;padding:12px;border-top:1px solid var(--b1);display:flex;align-items:center;gap:8px}
+.uav{width:28px;height:28px;border-radius:50%;background:var(--s3);border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--t2)}
+
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{padding:11px 20px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;background:var(--s1);flex-shrink:0}
+.pdot{width:7px;height:7px;border-radius:50%;background:var(--iris);margin-right:8px;display:inline-block}
+.pname{font-size:14px;font-weight:600}.pdesc{font-size:11px;color:var(--t3)}
+.tabs{display:flex;gap:3px}
+.tab{font-size:12px;padding:5px 11px;border-radius:6px;cursor:pointer;color:var(--t2);border:1px solid transparent;background:none;font-family:var(--f);transition:all .12s}
+.tab:hover{background:var(--s2);color:var(--t1)}.tab.active{background:var(--id);color:#a09ae8;border-color:var(--im)}
+
+.view{display:none;flex:1;flex-direction:column;overflow:hidden}
+.view.active{display:flex}
+
+.msgs{flex:1;overflow-y:auto;padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+.msgs::-webkit-scrollbar{width:3px}
+.msgs::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+.msg{display:flex;gap:9px;align-items:flex-start}
+.msg.user{flex-direction:row-reverse}
+.mav{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.bub{max-width:500px;padding:9px 13px;border-radius:11px;font-size:13px;line-height:1.6}
+.msg.agent .bub{background:var(--s2);border:1px solid var(--b1);border-top-left-radius:3px}
+.msg.user .bub{background:var(--id);border:1px solid var(--im);border-top-right-radius:3px}
+.mname{font-size:10px;color:var(--t3);margin-bottom:3px;font-weight:500}
+.mtime{font-size:10px;color:var(--t3);margin-top:4px}
+.itag{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 7px;border-radius:10px;background:var(--id);color:#a09ae8;margin-bottom:5px}
+.dels{margin-top:8px;padding-top:8px;border-top:1px solid var(--b1);display:flex;flex-direction:column;gap:3px}
+.drow{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t2)}
+.dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.dg{background:var(--green)}.da{background:var(--amber)}.dgr{background:var(--b2)}
+.typing{display:flex;align-items:center;gap:4px;padding:10px 13px;background:var(--s2);border:1px solid var(--b1);border-radius:11px;border-top-left-radius:3px;width:fit-content}
+.typing span{width:5px;height:5px;border-radius:50%;background:var(--t3);animation:bounce .9s infinite}
+.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
+.input-area{padding:12px 20px;border-top:1px solid var(--b1);display:flex;gap:9px;align-items:flex-end}
+textarea{flex:1;background:var(--s2);border:1px solid var(--b2);border-radius:10px;padding:9px 13px;font-size:13px;color:var(--t1);font-family:var(--f);resize:none;outline:none;line-height:1.5;max-height:100px;transition:border .12s}
+textarea:focus{border-color:var(--iris)}
+textarea::placeholder{color:var(--t3)}
+.sbtn{width:34px;height:34px;border-radius:8px;background:var(--iris);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .12s}
+.sbtn:hover{opacity:.85}.sbtn:disabled{opacity:.35;cursor:not-allowed}
+.sbtn svg{width:15px;height:15px;fill:white}
+
+.scroll{flex:1;overflow-y:auto;padding:18px 20px}
+.scroll::-webkit-scrollbar{width:3px}
+.scroll::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+.ac{background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:13px 15px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.ai{display:flex;align-items:center;gap:11px}
+.aav{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.an{font-size:13px;font-weight:500}.ar{font-size:11px;color:var(--t2);margin-top:1px}.at{font-size:11px;color:var(--t3);margin-top:2px}
+.badge{font-size:10px;padding:3px 9px;border-radius:20px;font-weight:500;white-space:nowrap}
+.ba{background:var(--gd);color:#5DCAA5}.bw{background:var(--ad);color:#EF9F27}.bv{background:var(--s3);color:var(--t3);border:1px solid var(--b2)}
+.stitle{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin:16px 0 8px}
+
+.mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px;margin-bottom:16px}
+.mc{background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:13px 15px}
+.ml{font-size:10px;color:var(--t3);margin-bottom:5px}.mv{font-size:24px;font-weight:700;line-height:1}.mt{font-size:11px;margin-top:4px}
+.tu{color:var(--green)}.tw{color:var(--amber)}.tn{color:var(--t3)}
+.card{background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:14px 16px;margin-bottom:10px}
+.ct{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:11px}
+.di{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid var(--b1);font-size:12px}
+.di:last-child{border-bottom:none}.dn{font-weight:600;color:var(--t2);min-width:44px}.dt{color:var(--t1);line-height:1.5}
+
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.pcard{background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:14px 16px;cursor:pointer;transition:border .12s}
+.pcard:hover{border-color:var(--b2)}
+.ph{display:flex;align-items:center;gap:11px;margin-bottom:11px}
+.pav{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.pn{font-size:13px;font-weight:600}.pr{font-size:11px;color:var(--t2);margin-top:1px}.pp{font-size:10px;color:var(--t3);margin-top:2px}
+.ps{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px}
+.pst{background:var(--s3);border-radius:6px;padding:7px 9px}
+.psv{font-size:15px;font-weight:700}.psl{font-size:9px;color:var(--t3);margin-top:2px}
+.pb{margin-top:8px}.pbl{display:flex;justify-content:space-between;font-size:10px;color:var(--t3);margin-bottom:4px}
+.pbr{height:4px;background:var(--s3);border-radius:2px;overflow:hidden}
+.pbf{height:100%;border-radius:2px;transition:width .5s}
+.ptags{display:flex;flex-wrap:wrap;gap:4px;margin-top:9px}
+.ptag{font-size:10px;padding:2px 7px;border-radius:10px;background:var(--s3);color:var(--t3)}
+.pbar{display:flex;gap:4px;margin-bottom:14px}
+.pbtn{font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;border:1px solid var(--b2);background:none;color:var(--t2);font-family:var(--f);transition:all .12s}
+.pbtn:hover{background:var(--s2)}.pbtn.active{background:var(--id);color:#a09ae8;border-color:var(--im)}
+
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center}
+.modal-ov.open{display:flex}
+.modal{background:var(--s1);border:1px solid var(--b2);border-radius:12px;width:480px;max-height:80vh;overflow-y:auto;padding:20px}
+.mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.mt2{font-size:15px;font-weight:600}
+.mc2{background:none;border:none;color:var(--t2);font-size:18px;cursor:pointer;font-family:var(--f)}
+.al{display:flex;flex-direction:column;gap:6px}
+.ali{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;background:var(--s2);border-radius:7px;font-size:12px}
+.ad2{color:var(--t3);min-width:60px;flex-shrink:0}.at2{color:var(--t1);line-height:1.5}
+
+.new-proj{background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:20px;margin-bottom:16px}
+.np-title{font-size:13px;font-weight:600;margin-bottom:14px}
+.np-input{width:100%;background:var(--s3);border:1px solid var(--b2);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--t1);font-family:var(--f);outline:none;margin-bottom:8px;transition:border .12s}
+.np-input:focus{border-color:var(--iris)}
+.np-input::placeholder{color:var(--t3)}
+.np-btn{width:100%;padding:9px;border-radius:8px;background:var(--iris);border:none;color:white;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--f);transition:opacity .12s;margin-top:4px}
+.np-btn:hover{opacity:.85}.np-btn:disabled{opacity:.4;cursor:not-allowed}
+
+.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--t3)}
+.ei{font-size:28px}.et{font-size:13px;font-weight:500;color:var(--t2)}.ed{font-size:12px}
+
+@media(max-width:600px){
+  .sidebar{width:56px}
+  .nn,.ns,.logo-t,.logo-s,.uav+div,.sb-lbl{display:none}
+  .sb-head{justify-content:center;padding:12px 8px}
+  .ni{justify-content:center;padding:8px}
+}
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sb-head">
+    <div class="logo">CC</div>
+    <div><div class="logo-t">Command Center</div><div class="logo-s">Iris · Chief of Staff</div></div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">Projekt</div>
+    <div class="ni active" onclick="showProj('mytime',this)">
+      <div class="nav-av" style="background:#7F77DD22;color:#7F77DD">MT</div>
+      <div><div class="nn">My-time</div><div class="ns">5 agenter · aktiv</div></div>
+    </div>
+    <div class="ni" onclick="showProj('team2wear',this)">
+      <div class="nav-av" style="background:#1D9E7522;color:#1D9E75">T2</div>
+      <div><div class="nn">Team2wear</div><div class="ns">5 agenter · aktiv</div></div>
+    </div>
+    <div class="ni" onclick="showProj('iso',this)">
+      <div class="nav-av" style="background:#BA751722;color:#BA7517">ISO</div>
+      <div><div class="nn">ISO-plattformen</div><div class="ns">5 agenter · aktiv</div></div>
+    </div>
+    <div id="extra-projects"></div>
+    <div class="na" onclick="showNewProj()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nytt projekt
+    </div>
+  </div>
+  <div class="sb-sec" style="margin-top:8px">
+    <div class="sb-lbl">Verktyg</div>
+    <div class="ni" onclick="showProj('personal',this)">
+      <div class="nav-av" style="background:#378ADD22;color:#378ADD">👥</div>
+      <div><div class="nn">Personal</div><div class="ns">15 agenter</div></div>
+    </div>
+  </div>
+  <div class="sb-foot">
+    <div class="uav">Du</div>
+    <div><div style="font-size:12px;font-weight:500">Grundaren</div><div style="font-size:10px;color:var(--t3)">Admin</div></div>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center">
+      <span class="pdot" id="pdot"></span>
+      <div><div class="pname" id="pname">My-time</div><div class="pdesc" id="pdesc">Tidsrapportering för småteam · MVP-fas</div></div>
+    </div>
+    <div class="tabs" id="tabs">
+      <button class="tab active" onclick="switchTab('chat',this)">Iris & Sam</button>
+      <button class="tab" onclick="switchTab('status',this)">Teamstatus</button>
+      <button class="tab" onclick="switchTab('progress',this)">Framdrift</button>
+    </div>
+  </div>
+
+  <!-- MY-TIME -->
+  <div id="v-mytime" class="view active">
+    <div id="t-chat" class="view active">
+      <div class="msgs" id="msgs">
+        <div class="msg agent">
+          <div class="mav" style="background:#7F77DD22;color:#a09ae8">I</div>
+          <div>
+            <div class="mname">Iris — Chief of Staff</div>
+            <div class="bub"><div class="itag">● Chief of Staff</div>God morgon. Tre aktiva projekt: My-time, Team2wear och ISO-plattformen. Vad är viktigast idag?</div>
+            <div class="mtime">Nu</div>
+          </div>
+        </div>
+      </div>
+      <div class="input-area">
+        <textarea id="inp" placeholder="Skriv till Iris..." rows="1" onkeydown="handleKey(event)" oninput="resize(this)"></textarea>
+        <button class="sbtn" onclick="send()" id="sbtn">
+          <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="t-status" class="view">
+      <div class="scroll">
+        <div class="stitle">Ledning</div>
+        <div class="ac"><div class="ai"><div class="aav" style="background:#7F77DD22;color:#a09ae8">I</div><div><div class="an">Iris</div><div class="ar">Chief of Staff</div><div class="at">Koordinerar alla projekt</div></div></div><div class="badge ba">Aktiv</div></div>
+        <div class="ac"><div class="ai"><div class="aav" style="background:#534AB722;color:#7F77DD">S</div><div><div class="an">Sam</div><div class="ar">Projektchef · My-time</div><div class="at">Delegerar och följer upp</div></div></div><div class="badge ba">Aktiv</div></div>
+        <div class="stitle">My-time team</div>
+        <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">A</div><div><div class="an">Alex</div><div class="ar">Dev</div><div class="at">Kontrollerar betalflödet</div></div></div><div class="badge bw">Jobbar</div></div>
+        <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">M</div><div><div class="an">Maya</div><div class="ar">Strategi</div><div class="at">Early adopter-erbjudande</div></div></div><div class="badge bw">Jobbar</div></div>
+        <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">L</div><div><div class="an">Lina</div><div class="ar">Content</div><div class="at">Mejl skickat</div></div></div><div class="badge ba">Klar</div></div>
+        <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">R</div><div><div class="an">Robin</div><div class="ar">Tillväxt</div><div class="at">Väntar på instruktion</div></div></div><div class="badge bv">Väntar</div></div>
+      </div>
+    </div>
+    <div id="t-progress" class="view">
+      <div class="scroll">
+        <div class="mg">
+          <div class="mc"><div class="ml">Användare</div><div class="mv">24</div><div class="mt tu">+3 denna vecka</div></div>
+          <div class="mc"><div class="ml">Early adopters</div><div class="mv">2</div><div class="mt tw">Kontaktade</div></div>
+          <div class="mc"><div class="ml">Betalande</div><div class="mv">0</div><div class="mt tn">Mål: 1 idag</div></div>
+          <div class="mc"><div class="ml">Buggar</div><div class="mv">3</div><div class="mt tw">Alex jobbar</div></div>
+        </div>
+        <div class="card">
+          <div class="ct">Dagens leveranser</div>
+          <div class="di"><div class="dn">Lina</div><div class="dt">Mejl skickat till 2 early adopters</div></div>
+          <div class="di"><div class="dn">Maya</div><div class="dt">Early adopter-paket: 40% i 3 mån</div></div>
+          <div class="di"><div class="dn">Robin</div><div class="dt">CTA uppflyttad, konvertering +12%</div></div>
+          <div class="di"><div class="dn">Alex</div><div class="dt">2 av 3 friktionspunkter fixade</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEAM2WEAR -->
+  <div id="v-team2wear" class="view">
+    <div class="view active" style="flex:1">
+      <div class="scroll">
+        <div class="stitle">Team2wear team</div>
+        <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">L</div><div><div class="an">Leo</div><div class="ar">Projektchef</div><div class="at">Koordinerar Team2wear</div></div></div><div class="badge bv">Väntar</div></div>
+        <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">R</div><div><div class="an">Rex</div><div class="ar">Dev/Lovable</div><div class="at">Bygger sajten</div></div></div><div class="badge bv">Väntar</div></div>
+        <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">C</div><div><div class="an">Cleo</div><div class="ar">Design</div><div class="at">Visuell identitet</div></div></div><div class="badge bv">Väntar</div></div>
+        <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">N</div><div><div class="an">Nyx</div><div class="ar">Content</div><div class="at">Texter och sociala medier</div></div></div><div class="badge bv">Väntar</div></div>
+        <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">C</div><div><div class="an">Cato</div><div class="ar">Tillväxt</div><div class="at">Lag-outreach</div></div></div><div class="badge bv">Väntar</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ISO -->
+  <div id="v-iso" class="view">
+    <div class="view active" style="flex:1">
+      <div class="scroll">
+        <div class="stitle">ISO-plattformen team</div>
+        <div class="ac"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517">V</div><div><div class="an">Vera</div><div class="ar">Projektchef</div><div class="at">Koordinerar ISO-plattformen</div></div></div><div class="badge bv">Väntar</div></div>
+        <div class="ac"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517">A</div><div><div class="an">Ajax</div><div class="ar">Dev</div><div class="at">Plattformsutveckling</div></div></div><div class="badge bv">Väntar</div></div>
+        <div class="ac"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517">D</div><div><div class="an">Dion</div><div class="ar">Strategi</div><div class="at">Pilotkunder och positionering</div></div></div><div class="badge bv">Väntar</div></div>
+        <div class="ac"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517">L</div><div><div class="an">Lyra</div><div class="ar">Content</div><div class="at">Guider och whitepapers</div></div></div><div class="badge bv">Väntar</div></div>
+        <div class="ac"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517">Z</div><div><div class="an">Zeno</div><div class="ar">Tillväxt</div><div class="at">LinkedIn och partnerships</div></div></div><div class="badge bv">Väntar</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PERSONAL -->
+  <div id="v-personal" class="view">
+    <div class="topbar" style="border-top:1px solid var(--b1)">
+      <div style="font-size:13px;font-weight:600">Alla agenter <span style="font-size:11px;color:var(--t3);font-weight:400;margin-left:6px">15 totalt · 3 projekt</span></div>
+      <div class="pbar">
+        <button class="pbtn active" onclick="setPeriod('dag',this)">Idag</button>
+        <button class="pbtn" onclick="setPeriod('vecka',this)">Vecka</button>
+        <button class="pbtn" onclick="setPeriod('manad',this)">Månad</button>
+      </div>
+    </div>
+    <div class="scroll">
+      <div class="stitle">Ledning</div>
+      <div class="pgrid" id="pg-lead"></div>
+      <div class="stitle" style="margin-top:18px">My-time</div>
+      <div class="pgrid" id="pg-mytime"></div>
+      <div class="stitle" style="margin-top:18px">Team2wear</div>
+      <div class="pgrid" id="pg-team2wear"></div>
+      <div class="stitle" style="margin-top:18px">ISO-plattformen</div>
+      <div class="pgrid" id="pg-iso"></div>
+    </div>
+  </div>
+
+  <!-- NYTT PROJEKT -->
+  <div id="v-newproj" class="view">
+    <div class="scroll">
+      <div class="new-proj">
+        <div class="np-title">🌈 Iris skapar ditt nya team</div>
+        <input class="np-input" id="np-name" placeholder="Projektnamn (t.ex. Projekt 4)" />
+        <textarea class="np-input" id="np-desc" placeholder="Beskriv projektet kort — vad är det, vem är det för?" rows="3" style="resize:none"></textarea>
+        <button class="np-btn" onclick="createTeam()" id="np-btn">Iris skapar teamet</button>
+      </div>
+      <div id="np-result" style="display:none">
+        <div class="card">
+          <div class="ct">Iris har skapat ditt team</div>
+          <div id="np-team"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="modal-ov" id="modal" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="mh"><div class="mt2" id="m-title">Agent</div><button class="mc2" onclick="document.getElementById('modal').classList.remove('open')">✕</button></div>
+    <div id="m-body"></div>
+  </div>
+</div>
+
+<script>
+const BASE = window.location.origin;
+let history = [];
+let loading = false;
+let period = 'dag';
+
+const PERSONS = {
+  iris:  {name:'Iris',role:'Chief of Staff',proj:'Alla',c:'#7F77DD',bg:'#7F77DD22',p:92,tags:['Koordinering','Delegering','Prioritering'],stats:{dag:{t:8,k:6,s:'4m'},vecka:{t:42,k:38,s:'4m'},manad:{t:168,k:155,s:'4m'}},log:['Idag 08:15 — Morgonbriefing skickad','Idag 08:23 — Delegerat 4 uppgifter till Sam','Idag 09:10 — Teamstatus uppdaterad']},
+  sam:   {name:'Sam',role:'Projektchef',proj:'My-time',c:'#7F77DD',bg:'#534AB722',p:87,tags:['Planering','Delegering','Uppföljning'],stats:{dag:{t:6,k:5,s:'5m'},vecka:{t:30,k:28,s:'5m'},manad:{t:120,k:112,s:'5m'}},log:['Idag 08:23 — Mottog instruktion från Iris','Idag 08:25 — Delegerade till teamet']},
+  alex:  {name:'Alex',role:'Dev',proj:'My-time',c:'#1D9E75',bg:'#1D9E7522',p:78,tags:['Kod','Buggar','Betalflöde'],stats:{dag:{t:4,k:4,s:'12m'},vecka:{t:18,k:17,s:'11m'},manad:{t:72,k:69,s:'11m'}},log:['Idag — Fixat 2 friktionspunkter i betalflödet','Igår — Åtgärdat 2 buggar']},
+  maya:  {name:'Maya',role:'Strategi',proj:'My-time',c:'#1D9E75',bg:'#1D9E7522',p:85,tags:['Strategi','Marknad','Konkurrens'],stats:{dag:{t:3,k:3,s:'8m'},vecka:{t:14,k:13,s:'8m'},manad:{t:56,k:52,s:'8m'}},log:['Idag — Early adopter-paket klart','Igår — Konkurrensanalys klar']},
+  lina:  {name:'Lina',role:'Content',proj:'My-time',c:'#1D9E75',bg:'#1D9E7522',p:95,tags:['Content','Mejl','Sociala medier'],stats:{dag:{t:5,k:5,s:'6m'},vecka:{t:22,k:21,s:'6m'},manad:{t:88,k:84,s:'6m'}},log:['Idag — Mejl skickat till 2 early adopters','Igår — Nyhetsbrev skickat']},
+  robin: {name:'Robin',role:'Tillväxt',proj:'My-time',c:'#1D9E75',bg:'#1D9E7522',p:72,tags:['SEO','Tillväxt','Konvertering'],stats:{dag:{t:2,k:2,s:'9m'},vecka:{t:11,k:10,s:'9m'},manad:{t:44,k:40,s:'9m'}},log:['Idag — CTA uppflyttad på landningssida','Igår — SEO-rapport klar']},
+  leo:   {name:'Leo',role:'Projektchef',proj:'Team2wear',c:'#1D9E75',bg:'#1D9E7522',p:80,tags:['Planering','Sport','E-handel'],stats:{dag:{t:3,k:2,s:'6m'},vecka:{t:15,k:12,s:'6m'},manad:{t:60,k:48,s:'6m'}},log:['Idag — Briefat teamet om veckoplan']},
+  rex:   {name:'Rex',role:'Dev/Lovable',proj:'Team2wear',c:'#1D9E75',bg:'#1D9E7522',p:75,tags:['Lovable','Frontend','E-handel'],stats:{dag:{t:2,k:2,s:'15m'},vecka:{t:10,k:8,s:'14m'},manad:{t:40,k:32,s:'14m'}},log:['Idag — Produktsida under uppbyggnad']},
+  cleo:  {name:'Cleo',role:'Design',proj:'Team2wear',c:'#1D9E75',bg:'#1D9E7522',p:88,tags:['Design','Varumärke','UX'],stats:{dag:{t:3,k:3,s:'10m'},vecka:{t:15,k:14,s:'10m'},manad:{t:60,k:55,s:'10m'}},log:['Idag — Färgpalett och logotyp klar']},
+  nyx:   {name:'Nyx',role:'Content',proj:'Team2wear',c:'#1D9E75',bg:'#1D9E7522',p:82,tags:['Content','Sport','Sociala medier'],stats:{dag:{t:4,k:3,s:'7m'},vecka:{t:18,k:15,s:'7m'},manad:{t:72,k:60,s:'7m'}},log:['Idag — Instagram-plan utkast klart']},
+  cato:  {name:'Cato',role:'Tillväxt',proj:'Team2wear',c:'#1D9E75',bg:'#1D9E7522',p:70,tags:['Outreach','Lag','Konvertering'],stats:{dag:{t:2,k:1,s:'11m'},vecka:{t:10,k:7,s:'11m'},manad:{t:40,k:28,s:'11m'}},log:['Idag — Lista på 10 motionslag att kontakta']},
+  vera:  {name:'Vera',role:'Projektchef',proj:'ISO',c:'#BA7517',bg:'#BA751722',p:83,tags:['Planering','ISO','SaaS'],stats:{dag:{t:3,k:3,s:'7m'},vecka:{t:15,k:14,s:'7m'},manad:{t:60,k:55,s:'7m'}},log:['Idag — MVP-scope definierat']},
+  ajax:  {name:'Ajax',role:'Dev',proj:'ISO',c:'#BA7517',bg:'#BA751722',p:79,tags:['Kod','Dokumenthantering','SaaS'],stats:{dag:{t:4,k:3,s:'13m'},vecka:{t:18,k:14,s:'13m'},manad:{t:72,k:56,s:'13m'}},log:['Idag — Datamodell för dokumenthantering']},
+  dion:  {name:'Dion',role:'Strategi',proj:'ISO',c:'#BA7517',bg:'#BA751722',p:86,tags:['B2B','ISO','Pilotkunder'],stats:{dag:{t:3,k:3,s:'9m'},vecka:{t:14,k:13,s:'9m'},manad:{t:56,k:51,s:'9m'}},log:['Idag — 5 pilotföretag identifierade']},
+  lyra:  {name:'Lyra',role:'Content',proj:'ISO',c:'#BA7517',bg:'#BA751722',p:90,tags:['Guider','Whitepaper','B2B'],stats:{dag:{t:4,k:4,s:'8m'},vecka:{t:18,k:18,s:'8m'},manad:{t:72,k:70,s:'8m'}},log:['Idag — Guide om ISO 9001 påbörjad']},
+  zeno:  {name:'Zeno',role:'Tillväxt',proj:'ISO',c:'#BA7517',bg:'#BA751722',p:74,tags:['LinkedIn','Partnerships','B2B'],stats:{dag:{t:2,k:2,s:'10m'},vecka:{t:10,k:9,s:'10m'},manad:{t:40,k:36,s:'10m'}},log:['Idag — LinkedIn-strategi utkast klart']}
+};
+
+async function send() {
+  const inp = document.getElementById('inp');
+  const text = inp.value.trim();
+  if (!text || loading) return;
+  inp.value = ''; inp.style.height = 'auto';
+  loading = true;
+  document.getElementById('sbtn').disabled = true;
+
+  addMsg('user', text, 'Du', null, null, null);
+  history.push({role:'user', content:text});
+
+  const te = addTyping('Iris');
+
+  try {
+    const res = await fetch(`${BASE}/api/chat`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({messages: history})
+    });
+    const data = await res.json();
+    te.remove();
+
+    if (data.error) throw new Error(data.error);
+
+    history.push({role:'assistant', content:data.iris});
+    addIrisMsg(data.iris, data.delegations || []);
+
+    for (const ag of (data.agents || [])) {
+      addMsg('agent', ag.reply, `${ag.name} — ${ag.role}`, ag.name[0], ag.isSummary ? '#534AB722' : '#1D9E7522', ag.isSummary ? '#7F77DD' : '#1D9E75');
+    }
+  } catch(e) {
+    te.remove();
+    addMsg('agent', `Kunde inte nå Iris: ${e.message}`, 'Iris', 'I', '#7F77DD22', '#a09ae8');
+  }
+
+  loading = false;
+  document.getElementById('sbtn').disabled = false;
+}
+
+function addIrisMsg(text, dels) {
+  const c = document.getElementById('msgs');
+  const d = document.createElement('div');
+  d.className = 'msg agent';
+  const t = now();
+  let dh = dels.length > 0 ? `<div class="dels">${dels.map(dl=>`<div class="drow"><div class="dot da"></div>${dl.agent} — ${dl.task}</div>`).join('')}</div>` : '';
+  d.innerHTML = `<div class="mav" style="background:#7F77DD22;color:#a09ae8">I</div><div><div class="mname">Iris — Chief of Staff</div><div class="bub"><div class="itag">● Chief of Staff</div>${esc(text).replace(/\n/g,'<br>')}${dh}</div><div class="mtime">${t}</div></div>`;
+  c.appendChild(d); c.scrollTop = c.scrollHeight;
+}
+
+function addMsg(type, text, name, init, bg, color) {
+  const c = document.getElementById('msgs');
+  const d = document.createElement('div');
+  d.className = `msg ${type}`;
+  const avs = type==='agent' ? `background:${bg||'#1D9E7522'};color:${color||'#1D9E75'}` : 'background:#2a2a2a;color:#999';
+  const av = type==='agent' ? (init||'?') : 'Du';
+  d.innerHTML = `<div class="mav" style="${avs}">${av}</div><div>${type==='agent'?`<div class="mname">${name}</div>`:''}<div class="bub">${esc(text).replace(/\n/g,'<br>')}</div><div class="mtime">${now()}</div></div>`;
+  c.appendChild(d); c.scrollTop = c.scrollHeight;
+}
+
+function addTyping(name) {
+  const c = document.getElementById('msgs');
+  const d = document.createElement('div');
+  d.className = 'msg agent';
+  d.innerHTML = `<div class="mav" style="background:#2a2a2a;color:#666">${name[0]}</div><div><div class="mname">${name} skriver...</div><div class="typing"><span></span><span></span><span></span></div></div>`;
+  c.appendChild(d); c.scrollTop = c.scrollHeight;
+  return d;
+}
+
+async function createTeam() {
+  const name = document.getElementById('np-name').value.trim();
+  const desc = document.getElementById('np-desc').value.trim();
+  if (!name || !desc) { alert('Fyll i namn och beskrivning'); return; }
+
+  const btn = document.getElementById('np-btn');
+  btn.disabled = true; btn.textContent = 'Iris skapar teamet...';
+
+  try {
+    const res = await fetch(`${BASE}/api/create-team`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({projectName:name, description:desc})
+    });
+    const data = await res.json();
+
+    if (data.error) throw new Error(data.error);
+
+    document.getElementById('np-result').style.display = 'block';
+    document.getElementById('np-team').innerHTML = data.team.map(a =>
+      `<div class="di"><div class="dn">${a.name}</div><div class="dt"><strong>${a.role}</strong> — ${a.system}</div></div>`
+    ).join('');
+
+    // Lägg till i sidebar
+    const colors = ['#378ADD','#D85A30','#7F77DD'];
+    const c = colors[Math.floor(Math.random()*colors.length)];
+    const abbr = name.substring(0,2).toUpperCase();
+    const id = name.toLowerCase().replace(/\s/g,'-');
+    document.getElementById('extra-projects').innerHTML += `
+      <div class="ni" onclick="showProj('${id}',this)">
+        <div class="nav-av" style="background:${c}22;color:${c}">${abbr}</div>
+        <div><div class="nn">${name}</div><div class="ns">${data.team.length} agenter · ny</div></div>
+      </div>`;
+
+  } catch(e) {
+    alert('Kunde inte skapa team: ' + e.message);
+  }
+
+  btn.disabled = false; btn.textContent = 'Iris skapar teamet';
+}
+
+function showProj(id, el) {
+  document.querySelectorAll('[id^="v-"]').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  if (el) el.classList.add('active');
+
+  const v = document.getElementById('v-'+id);
+  if (v) { v.classList.add('active'); }
+
+  const info = {
+    mytime:    ['My-time','Tidsrapportering för småteam · MVP-fas','#7F77DD',true],
+    team2wear: ['Team2wear','Idrottsställ för motionslag · Lovable','#1D9E75',false],
+    iso:       ['ISO-plattformen','Digital ISO-revisionsberedskap · SaaS','#BA7517',false],
+    personal:  ['Personal','Alla agenter · produktivitet','#378ADD',false],
+    newproj:   ['Nytt projekt','Iris skapar ditt team automatiskt','#iris',false]
+  };
+  const i = info[id] || ['Projekt','','#7F77DD',false];
+  document.getElementById('pname').textContent = i[0];
+  document.getElementById('pdesc').textContent = i[1];
+  document.getElementById('pdot').style.background = i[2];
+  document.getElementById('tabs').style.display = i[3] ? 'flex' : 'none';
+
+  if (id==='personal') renderPersonnel(period);
+}
+
+function showNewProj() {
+  document.querySelectorAll('[id^="v-"]').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.getElementById('v-newproj').classList.add('active');
+  document.getElementById('pname').textContent = 'Nytt projekt';
+  document.getElementById('pdesc').textContent = 'Iris skapar ditt team automatiskt';
+  document.getElementById('tabs').style.display = 'none';
+}
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('#v-mytime .view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('t-'+tab).classList.add('active');
+  btn.classList.add('active');
+}
+
+function setPeriod(p, btn) {
+  period = p;
+  document.querySelectorAll('.pbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPersonnel(p);
+}
+
+function renderPersonnel(p) {
+  const lead = ['iris','sam'];
+  const mt = ['alex','maya','lina','robin'];
+  const t2 = ['leo','rex','cleo','nyx','cato'];
+  const iso = ['vera','ajax','dion','lyra','zeno'];
+  document.getElementById('pg-lead').innerHTML = lead.map(k=>pcard(k,p)).join('');
+  document.getElementById('pg-mytime').innerHTML = mt.map(k=>pcard(k,p)).join('');
+  document.getElementById('pg-team2wear').innerHTML = t2.map(k=>pcard(k,p)).join('');
+  document.getElementById('pg-iso').innerHTML = iso.map(k=>pcard(k,p)).join('');
+}
+
+function pcard(k, p) {
+  const a = PERSONS[k];
+  const s = a.stats[p];
+  const bc = a.p>=90?'var(--green)':a.p>=75?'var(--amber)':'var(--red)';
+  return `<div class="pcard" onclick="openPerson('${k}')">
+    <div class="ph"><div class="pav" style="background:${a.bg};color:${a.c}">${a.name[0]}</div><div><div class="pn">${a.name}</div><div class="pr">${a.role}</div><div class="pp">${a.proj}</div></div></div>
+    <div class="ps">
+      <div class="pst"><div class="psv">${s.t}</div><div class="psl">Uppgifter</div></div>
+      <div class="pst"><div class="psv">${s.k}</div><div class="psl">Klara</div></div>
+      <div class="pst"><div class="psv">${s.s}</div><div class="psl">Svarstid</div></div>
+    </div>
+    <div class="pb"><div class="pbl"><span>Produktivitet</span><span>${a.p}%</span></div><div class="pbr"><div class="pbf" style="width:${a.p}%;background:${bc}"></div></div></div>
+    <div class="ptags">${a.tags.map(t=>`<div class="ptag">${t}</div>`).join('')}</div>
+  </div>`;
+}
+
+function openPerson(k) {
+  const a = PERSONS[k];
+  const bc = a.p>=90?'var(--green)':a.p>=75?'var(--amber)':'var(--red)';
+  document.getElementById('m-title').textContent = `${a.name} — ${a.role}`;
+  document.getElementById('m-body').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
+      <div class="pst"><div class="psv">${a.stats.dag.t}</div><div class="psl">Idag</div></div>
+      <div class="pst"><div class="psv">${a.stats.vecka.t}</div><div class="psl">Vecka</div></div>
+      <div class="pst"><div class="psv">${a.stats.manad.t}</div><div class="psl">Månad</div></div>
+    </div>
+    <div class="pb" style="margin-bottom:14px"><div class="pbl"><span>Produktivitet</span><span>${a.p}%</span></div><div class="pbr"><div class="pbf" style="width:${a.p}%;background:${bc}"></div></div></div>
+    <div class="ptags" style="margin-bottom:14px">${a.tags.map(t=>`<div class="ptag">${t}</div>`).join('')}</div>
+    <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Aktivitetslogg</div>
+    <div class="al">${a.log.map(l=>{const pts=l.split(' — ');return `<div class="ali"><div class="ad2">${pts[0]}</div><div class="at2">${pts.slice(1).join(' — ')}</div></div>`}).join('')}</div>`;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal(e){if(e.target===document.getElementById('modal'))document.getElementById('modal').classList.remove('open')}
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}
+function resize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
+function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function now(){return new Date().toLocaleTimeString('sv',{hour:'2-digit',minute:'2-digit'})}
+
+renderPersonnel('dag');
+</script>
+</body>
+</html>
 
