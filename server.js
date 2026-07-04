@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer/lib/nodemailer');
 const express = require('express');
 const cors = require('cors');
 const https = require('https');
