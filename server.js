@@ -158,7 +158,8 @@ app.post('/api/chat', async (req, res) => {
   try {
     const { messages, system } = req.body;
     const activeSystem = system || AGENTS.iris.system;
-    const irisReply = await callClaude(activeSystem, messages);
+    const cleanMessages = (messages || []).filter(m => m && m.content && String(m.content).trim() !== '');
+    const irisReply = await callClaude(activeSystem, cleanMessages);
     const delegations = parseDelegations(irisReply);
     const agentResponses = [];
 
