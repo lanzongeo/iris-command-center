@@ -6,6 +6,10 @@ const path = require('path');
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use((req, res, next) => {
+  res.setTimeout(120000);
+  next();
+});
 app.use(express.static(path.join(__dirname, 'public')));
 
 const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
@@ -299,4 +303,6 @@ app.post('/api/notion/update', async (req, res) => {
 app.get('/health', (req, res) => res.json({ status: 'Iris är online', agents: Object.keys(AGENTS).length }));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Iris Command Center körs på port ${PORT}`));
+const server = app.listen(PORT, () => console.log(`Iris Command Center körs på port ${PORT}`));
+server.timeout = 120000;
+server.keepAliveTimeout = 120000;
