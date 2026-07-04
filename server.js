@@ -114,18 +114,28 @@ function detectEmailContent(text) {
 
 // Extrahera mejldelar från agentens svar
 function extractEmailParts(text, defaultTo) {
-  const toMatch = text.match(/till:\s*([^
-]+)/i);
-  const subjectMatch = text.match(/ämne:\s*([^
-]+)/i) || text.match(/subject:\s*([^
-]+)/i);
-  const to = toMatch ? toMatch[1].trim() : defaultTo || '';
-  const subject = subjectMatch ? subjectMatch[1].trim() : 'Meddelande från My-time';
-  const bodyLines = text.split('\n').filter(l => 
-    !l.match(/^(till|från|ämne|subject|to|from):/i)
-  );
-  const html = bodyLines.join('<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  return { to, subject, html };
+  if (!text || typeof text !== 'string') {
+    return { to: defaultTo || '', subject: 'Meddelande från My-time', html: '' };
+  }
+  const lines = text.split('\n');
+  let to = defaultTo || '';
+  let subject = 'Meddelande från My-time';
+  const bodyLines = [];
+  for (const line of lines) {
+    const t = line.trim();
+    if (t.match(/^[\*]*till[\*]*:/i) || t.match(/^[\*]*to[\*]*:/i)) {
+      to = t.replace(/^[\*]*(till|to)[\*]*:\s*/i, '').replace(/[<>]/g, '').trim();
+    } else if (t.match(/^[\*]*(ämne|subject)[\*]*:/i)) {
+      subject = t.replace(/^[\*]*(ämne|subject)[\*]*:\s*/i, '').trim();
+    } else if (!t.match(/^[\*]*(från|from)[\*]*:/i)) {
+      bodyLines.push(line);
+    }
+  }
+  const html = bodyLines
+    .filter(l => l.trim())
+    .join('<br>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  return { to: to || defaultTo || '', subject, html };
 }
 
 // Parsea delegationer
