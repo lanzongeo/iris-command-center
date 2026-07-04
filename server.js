@@ -107,9 +107,12 @@ async function sendEmailSMTP(to, subject, bodyText, fromName) {
 
 // Kolla om agent-svar innehåller mejlinnehåll
 function detectEmailContent(text) {
-  const emailSignals = ['till:', 'från:', 'ämne:', 'hej!', 'med vänliga hälsningar', 'subject:', 'dear', 'välkommen'];
-  const lower = text.toLowerCase();
-  return emailSignals.some(signal => lower.includes(signal));
+  if (!text) return false;
+  const lower = text.toLowerCase().replace(/\*/g, '');
+  const emailSignals = ['till:', 'till:**', 'to:', 'ämne:', 'subject:', 'från:', 'from:'];
+  const hasEmailField = emailSignals.some(signal => lower.includes(signal.replace(/\*/g,'')));
+  const hasEmailAddress = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/.test(text);
+  return hasEmailField && hasEmailAddress;
 }
 
 // Extrahera mejldelar från agentens svar
@@ -195,7 +198,9 @@ app.post('/api/chat', async (req, res) => {
     for (const r of agentResponses) {
       if (detectEmailContent(r.reply)) {
         const parts = extractEmailParts(r.reply, null);
-        if (parts.to && parts.to.includes('@')) {
+        // Rensa to-adressen från asterisker och mellanslag
+      parts.to = (parts.to || '').replace(/[*]/g, '').trim();
+      if (parts.to && parts.to.includes('@')) {
           try {
             await sendEmailSMTP(parts.to, parts.subject, parts.html, 'My-time');
             sentEmails.push({ agent: r.name, to: parts.to, subject: parts.subject });
