@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Command Center · Iris</title>
+<title>Command Center</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -12,10 +12,12 @@
   --iris:#7F77DD;--id:rgba(127,119,221,0.12);--im:rgba(127,119,221,0.25);
   --green:#1D9E75;--gd:rgba(29,158,117,0.12);
   --amber:#BA7517;--ad:rgba(186,117,23,0.12);
+  --blue:#378ADD;--bd:rgba(55,138,221,0.12);
   --r:8px;--f:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif
 }
 body{font-family:var(--f);background:var(--bg);color:var(--t1);height:100vh;display:flex;overflow:hidden;font-size:14px}
 
+/* SIDEBAR */
 .sidebar{width:220px;background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column;flex-shrink:0}
 .sb-head{padding:14px 16px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:10px}
 .logo{width:32px;height:32px;border-radius:8px;background:var(--iris);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;flex-shrink:0}
@@ -23,8 +25,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--t1);height:100vh;disp
 .sb-sec{padding:10px 8px 4px}
 .sb-lbl{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;padding:0 8px 4px}
 .ni{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:var(--r);cursor:pointer;transition:background .12s;margin-bottom:2px}
-.ni:hover{background:var(--s2)}.ni.active{background:var(--id)}
-.ni.active .nn{color:#a09ae8}
+.ni:hover{background:var(--s2)}.ni.active{background:var(--id)}.ni.active .nn{color:#a09ae8}
 .nav-av{width:24px;height:24px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
 .nn{font-size:12px;font-weight:500}.ns{font-size:10px;color:var(--t3);margin-top:1px}
 .na{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--r);cursor:pointer;border:1px dashed var(--b2);margin:4px 0;color:var(--t3);font-size:12px;transition:all .12s}
@@ -32,17 +33,34 @@ body{font-family:var(--f);background:var(--bg);color:var(--t1);height:100vh;disp
 .sb-foot{margin-top:auto;padding:12px;border-top:1px solid var(--b1);display:flex;align-items:center;gap:8px}
 .uav{width:28px;height:28px;border-radius:50%;background:var(--s3);border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--t2)}
 
+/* MAIN */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .topbar{padding:11px 20px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;background:var(--s1);flex-shrink:0}
-.pdot{width:7px;height:7px;border-radius:50%;background:var(--iris);margin-right:8px;display:inline-block}
+.pdot{width:7px;height:7px;border-radius:50%;margin-right:8px;display:inline-block}
 .pname{font-size:14px;font-weight:600}.pdesc{font-size:11px;color:var(--t3)}
 .tabs{display:flex;gap:3px}
 .tab{font-size:12px;padding:5px 11px;border-radius:6px;cursor:pointer;color:var(--t2);border:1px solid transparent;background:none;font-family:var(--f);transition:all .12s}
 .tab:hover{background:var(--s2);color:var(--t1)}.tab.active{background:var(--id);color:#a09ae8;border-color:var(--im)}
 
+/* VIEWS */
 .view{display:none;flex:1;flex-direction:column;overflow:hidden}
 .view.active{display:flex}
 
+/* LEDNINGSRUM — chiefs selector */
+.chiefs-bar{display:flex;gap:6px;padding:10px 20px;border-bottom:1px solid var(--b1);background:var(--s1);flex-shrink:0;overflow-x:auto}
+.chiefs-bar::-webkit-scrollbar{height:3px}
+.chiefs-bar::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+.chief-btn{display:flex;align-items:center;gap:7px;padding:6px 12px;border-radius:20px;cursor:pointer;border:1px solid var(--b2);background:none;font-family:var(--f);font-size:12px;color:var(--t2);transition:all .12s;white-space:nowrap;flex-shrink:0}
+.chief-btn:hover{background:var(--s2);color:var(--t1)}
+.chief-btn.active{background:var(--id);color:#a09ae8;border-color:var(--im)}
+.chief-btn.all{border-color:var(--b2)}
+.chief-btn.all.active{background:rgba(127,119,221,0.08);color:#a09ae8}
+.chief-av{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.chief-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0}
+.add-chief{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;cursor:pointer;border:1px dashed var(--b2);background:none;font-family:var(--f);font-size:12px;color:var(--t3);transition:all .12s;flex-shrink:0}
+.add-chief:hover{border-color:var(--iris);color:var(--iris)}
+
+/* CHAT */
 .msgs{flex:1;overflow-y:auto;padding:18px 20px;display:flex;flex-direction:column;gap:14px}
 .msgs::-webkit-scrollbar{width:3px}
 .msgs::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
@@ -54,7 +72,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--t1);height:100vh;disp
 .msg.user .bub{background:var(--id);border:1px solid var(--im);border-top-right-radius:3px}
 .mname{font-size:10px;color:var(--t3);margin-bottom:3px;font-weight:500}
 .mtime{font-size:10px;color:var(--t3);margin-top:4px}
-.itag{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 7px;border-radius:10px;background:var(--id);color:#a09ae8;margin-bottom:5px}
+.ctag{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 7px;border-radius:10px;margin-bottom:5px}
 .dels{margin-top:8px;padding-top:8px;border-top:1px solid var(--b1);display:flex;flex-direction:column;gap:3px}
 .drow{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t2)}
 .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
@@ -63,7 +81,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--t1);height:100vh;disp
 .typing span{width:5px;height:5px;border-radius:50%;background:var(--t3);animation:bounce .9s infinite}
 .typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
 @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
-.input-area{padding:12px 20px;border-top:1px solid var(--b1);display:flex;gap:9px;align-items:flex-end}
+.input-area{padding:12px 20px;border-top:1px solid var(--b1);display:flex;gap:9px;align-items:flex-end;background:var(--bg)}
 textarea{flex:1;background:var(--s2);border:1px solid var(--b2);border-radius:10px;padding:9px 13px;font-size:13px;color:var(--t1);font-family:var(--f);resize:none;outline:none;line-height:1.5;max-height:100px;transition:border .12s}
 textarea:focus{border-color:var(--iris)}
 textarea::placeholder{color:var(--t3)}
@@ -71,6 +89,7 @@ textarea::placeholder{color:var(--t3)}
 .sbtn:hover{opacity:.85}.sbtn:disabled{opacity:.35;cursor:not-allowed}
 .sbtn svg{width:15px;height:15px;fill:white}
 
+/* STATUS & PROGRESS */
 .scroll{flex:1;overflow-y:auto;padding:18px 20px}
 .scroll::-webkit-scrollbar{width:3px}
 .scroll::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
@@ -81,7 +100,6 @@ textarea::placeholder{color:var(--t3)}
 .badge{font-size:10px;padding:3px 9px;border-radius:20px;font-weight:500;white-space:nowrap}
 .ba{background:var(--gd);color:#5DCAA5}.bw{background:var(--ad);color:#EF9F27}.bv{background:var(--s3);color:var(--t3);border:1px solid var(--b2)}
 .stitle{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin:16px 0 8px}
-
 .mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px;margin-bottom:16px}
 .mc{background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:13px 15px}
 .ml{font-size:10px;color:var(--t3);margin-bottom:5px}.mv{font-size:24px;font-weight:700;line-height:1}.mt{font-size:11px;margin-top:4px}
@@ -91,6 +109,7 @@ textarea::placeholder{color:var(--t3)}
 .di{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid var(--b1);font-size:12px}
 .di:last-child{border-bottom:none}.dn{font-weight:600;color:var(--t2);min-width:44px}.dt{color:var(--t1);line-height:1.5}
 
+/* PERSONAL */
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
 .pcard{background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:14px 16px;cursor:pointer;transition:border .12s}
 .pcard:hover{border-color:var(--b2)}
@@ -109,6 +128,7 @@ textarea::placeholder{color:var(--t3)}
 .pbtn{font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;border:1px solid var(--b2);background:none;color:var(--t2);font-family:var(--f);transition:all .12s}
 .pbtn:hover{background:var(--s2)}.pbtn.active{background:var(--id);color:#a09ae8;border-color:var(--im)}
 
+/* MODAL */
 .modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center}
 .modal-ov.open{display:flex}
 .modal{background:var(--s1);border:1px solid var(--b2);border-radius:12px;width:480px;max-height:80vh;overflow-y:auto;padding:20px}
@@ -119,13 +139,17 @@ textarea::placeholder{color:var(--t3)}
 .ali{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;background:var(--s2);border-radius:7px;font-size:12px}
 .ad2{color:var(--t3);min-width:60px;flex-shrink:0}.at2{color:var(--t1);line-height:1.5}
 
+/* ADD CHIEF MODAL */
+.form-input{width:100%;background:var(--s3);border:1px solid var(--b2);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--t1);font-family:var(--f);outline:none;margin-bottom:8px;transition:border .12s}
+.form-input:focus{border-color:var(--iris)}
+.form-input::placeholder{color:var(--t3)}
+.form-btn{width:100%;padding:9px;border-radius:8px;background:var(--iris);border:none;color:white;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--f);transition:opacity .12s;margin-top:4px}
+.form-btn:hover{opacity:.85}.form-btn:disabled{opacity:.4;cursor:not-allowed}
+.form-label{font-size:11px;color:var(--t3);margin-bottom:4px;margin-top:8px;display:block}
+
+/* NEW PROJ */
 .new-proj{background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:20px;margin-bottom:16px}
 .np-title{font-size:13px;font-weight:600;margin-bottom:14px}
-.np-input{width:100%;background:var(--s3);border:1px solid var(--b2);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--t1);font-family:var(--f);outline:none;margin-bottom:8px;transition:border .12s}
-.np-input:focus{border-color:var(--iris)}
-.np-input::placeholder{color:var(--t3)}
-.np-btn{width:100%;padding:9px;border-radius:8px;background:var(--iris);border:none;color:white;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--f);transition:opacity .12s;margin-top:4px}
-.np-btn:hover{opacity:.85}.np-btn:disabled{opacity:.4;cursor:not-allowed}
 
 .empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--t3)}
 .ei{font-size:28px}.et{font-size:13px;font-weight:500;color:var(--t2)}.ed{font-size:12px}
@@ -140,34 +164,42 @@ textarea::placeholder{color:var(--t3)}
 </head>
 <body>
 
+<!-- SIDEBAR -->
 <nav class="sidebar">
   <div class="sb-head">
     <div class="logo">CC</div>
-    <div><div class="logo-t">Command Center</div><div class="logo-s">Iris · Chief of Staff</div></div>
+    <div><div class="logo-t">Command Center</div><div class="logo-s">Ledningsrum</div></div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">Ledningsrum</div>
+    <div class="ni active" onclick="showView('ledning',this)">
+      <div class="nav-av" style="background:#7F77DD22;color:#7F77DD">🏛</div>
+      <div><div class="nn">Ledningsrum</div><div class="ns">Iris & Chiefs</div></div>
+    </div>
   </div>
   <div class="sb-sec">
     <div class="sb-lbl">Projekt</div>
-    <div class="ni active" onclick="showProj('mytime',this)">
+    <div class="ni" onclick="showView('mytime',this)">
       <div class="nav-av" style="background:#7F77DD22;color:#7F77DD">MT</div>
       <div><div class="nn">My-time</div><div class="ns">5 agenter · aktiv</div></div>
     </div>
-    <div class="ni" onclick="showProj('team2wear',this)">
+    <div class="ni" onclick="showView('team2wear',this)">
       <div class="nav-av" style="background:#1D9E7522;color:#1D9E75">T2</div>
       <div><div class="nn">Team2wear</div><div class="ns">5 agenter · aktiv</div></div>
     </div>
-    <div class="ni" onclick="showProj('iso',this)">
+    <div class="ni" onclick="showView('iso',this)">
       <div class="nav-av" style="background:#BA751722;color:#BA7517">ISO</div>
       <div><div class="nn">ISO-plattformen</div><div class="ns">5 agenter · aktiv</div></div>
     </div>
     <div id="extra-projects"></div>
-    <div class="na" onclick="showNewProj()">
+    <div class="na" onclick="showView('newproj',this)">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Nytt projekt
     </div>
   </div>
   <div class="sb-sec" style="margin-top:8px">
     <div class="sb-lbl">Verktyg</div>
-    <div class="ni" onclick="showProj('personal',this)">
+    <div class="ni" onclick="showView('personal',this)">
       <div class="nav-av" style="background:#378ADD22;color:#378ADD">👥</div>
       <div><div class="nn">Personal</div><div class="ns">15 agenter</div></div>
     </div>
@@ -178,45 +210,85 @@ textarea::placeholder{color:var(--t3)}
   </div>
 </nav>
 
+<!-- MAIN -->
 <main class="main">
   <div class="topbar">
     <div style="display:flex;align-items:center">
-      <span class="pdot" id="pdot"></span>
-      <div><div class="pname" id="pname">My-time</div><div class="pdesc" id="pdesc">Tidsrapportering för småteam · MVP-fas</div></div>
+      <span class="pdot" id="pdot" style="background:var(--iris)"></span>
+      <div><div class="pname" id="pname">Ledningsrum</div><div class="pdesc" id="pdesc">Din dagliga dialog med Iris och Chiefs</div></div>
     </div>
-    <div class="tabs" id="tabs">
-      <button class="tab active" onclick="switchTab('chat',this)">Iris & Sam</button>
+    <div class="tabs" id="tabs" style="display:none">
+      <button class="tab active" onclick="switchTab('chat',this)">Chatt</button>
       <button class="tab" onclick="switchTab('status',this)">Teamstatus</button>
       <button class="tab" onclick="switchTab('progress',this)">Framdrift</button>
     </div>
   </div>
 
+  <!-- LEDNINGSRUM -->
+  <div id="v-ledning" class="view active" style="flex-direction:column">
+    <!-- Chiefs bar -->
+    <div class="chiefs-bar" id="chiefs-bar">
+      <button class="chief-btn all active" onclick="selectChief('all',this)">
+        <span>Alla Chiefs</span>
+      </button>
+      <button class="chief-btn" onclick="selectChief('iris',this)" id="cb-iris">
+        <div class="chief-av" style="background:#7F77DD22;color:#a09ae8">I</div>
+        <span>Iris</span>
+        <div class="chief-dot"></div>
+      </button>
+      <button class="chief-btn" onclick="addChiefModal()" class="add-chief" style="display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;cursor:pointer;border:1px dashed var(--b2);background:none;font-family:var(--f);font-size:12px;color:var(--t3);transition:all .12s;flex-shrink:0">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Lägg till Chief
+      </button>
+    </div>
+
+    <!-- Chat -->
+    <div class="msgs" id="msgs">
+      <div class="msg agent">
+        <div class="mav" style="background:#7F77DD22;color:#a09ae8">I</div>
+        <div>
+          <div class="mname">Iris — Chief of Staff</div>
+          <div class="bub">
+            <div class="ctag" style="background:var(--id);color:#a09ae8">● Chief of Staff</div>
+            God morgon. Tre aktiva projekt: My-time, Team2wear och ISO-plattformen. Vad vill du fokusera på idag?
+          </div>
+          <div class="mtime">Nu</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <textarea id="inp" placeholder="Skriv till Iris..." rows="1" onkeydown="handleKey(event)" oninput="resize(this)"></textarea>
+      <button class="sbtn" onclick="send()" id="sbtn">
+        <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      </button>
+    </div>
+  </div>
+
   <!-- MY-TIME -->
-  <div id="v-mytime" class="view active">
-    <div id="t-chat" class="view active">
-      <div class="msgs" id="msgs">
+  <div id="v-mytime" class="view">
+    <div id="t-chat" class="view active" style="flex:1;flex-direction:column">
+      <div class="msgs" id="msgs-mytime">
         <div class="msg agent">
-          <div class="mav" style="background:#7F77DD22;color:#a09ae8">I</div>
+          <div class="mav" style="background:#534AB722;color:#7F77DD">S</div>
           <div>
-            <div class="mname">Iris — Chief of Staff</div>
-            <div class="bub"><div class="itag">● Chief of Staff</div>God morgon. Tre aktiva projekt: My-time, Team2wear och ISO-plattformen. Vad är viktigast idag?</div>
+            <div class="mname">Sam — Projektchef My-time</div>
+            <div class="bub"><div class="ctag" style="background:var(--id);color:#a09ae8">● My-time</div>Redo för dagens briefing. Vad är prioritet?</div>
             <div class="mtime">Nu</div>
           </div>
         </div>
       </div>
       <div class="input-area">
-        <textarea id="inp" placeholder="Skriv till Iris..." rows="1" onkeydown="handleKey(event)" oninput="resize(this)"></textarea>
-        <button class="sbtn" onclick="send()" id="sbtn">
+        <textarea id="inp-mytime" placeholder="Skriv till Sam..." rows="1" onkeydown="handleKeyProj(event,'mytime')" oninput="resize(this)"></textarea>
+        <button class="sbtn" onclick="sendProj('mytime')" id="sbtn-mytime">
           <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
         </button>
       </div>
     </div>
     <div id="t-status" class="view">
       <div class="scroll">
-        <div class="stitle">Ledning</div>
-        <div class="ac"><div class="ai"><div class="aav" style="background:#7F77DD22;color:#a09ae8">I</div><div><div class="an">Iris</div><div class="ar">Chief of Staff</div><div class="at">Koordinerar alla projekt</div></div></div><div class="badge ba">Aktiv</div></div>
-        <div class="ac"><div class="ai"><div class="aav" style="background:#534AB722;color:#7F77DD">S</div><div><div class="an">Sam</div><div class="ar">Projektchef · My-time</div><div class="at">Delegerar och följer upp</div></div></div><div class="badge ba">Aktiv</div></div>
         <div class="stitle">My-time team</div>
+        <div class="ac"><div class="ai"><div class="aav" style="background:#534AB722;color:#7F77DD">S</div><div><div class="an">Sam</div><div class="ar">Projektchef</div><div class="at">Delegerar och följer upp</div></div></div><div class="badge ba">Aktiv</div></div>
         <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">A</div><div><div class="an">Alex</div><div class="ar">Dev</div><div class="at">Kontrollerar betalflödet</div></div></div><div class="badge bw">Jobbar</div></div>
         <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">M</div><div><div class="an">Maya</div><div class="ar">Strategi</div><div class="at">Early adopter-erbjudande</div></div></div><div class="badge bw">Jobbar</div></div>
         <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">L</div><div><div class="an">Lina</div><div class="ar">Content</div><div class="at">Mejl skickat</div></div></div><div class="badge ba">Klar</div></div>
@@ -244,36 +316,32 @@ textarea::placeholder{color:var(--t3)}
 
   <!-- TEAM2WEAR -->
   <div id="v-team2wear" class="view">
-    <div class="view active" style="flex:1">
-      <div class="scroll">
-        <div class="stitle">Team2wear team</div>
-        <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">L</div><div><div class="an">Leo</div><div class="ar">Projektchef</div><div class="at">Koordinerar Team2wear</div></div></div><div class="badge bv">Väntar</div></div>
-        <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">R</div><div><div class="an">Rex</div><div class="ar">Dev/Lovable</div><div class="at">Bygger sajten</div></div></div><div class="badge bv">Väntar</div></div>
-        <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">C</div><div><div class="an">Cleo</div><div class="ar">Design</div><div class="at">Visuell identitet</div></div></div><div class="badge bv">Väntar</div></div>
-        <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">N</div><div><div class="an">Nyx</div><div class="ar">Content</div><div class="at">Texter och sociala medier</div></div></div><div class="badge bv">Väntar</div></div>
-        <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">C</div><div><div class="an">Cato</div><div class="ar">Tillväxt</div><div class="at">Lag-outreach</div></div></div><div class="badge bv">Väntar</div></div>
-      </div>
-    </div>
+    <div class="view active" style="flex:1"><div class="scroll">
+      <div class="stitle">Team2wear</div>
+      <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">L</div><div><div class="an">Leo</div><div class="ar">Projektchef</div><div class="at">Koordinerar Team2wear</div></div></div><div class="badge bv">Väntar</div></div>
+      <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">R</div><div><div class="an">Rex</div><div class="ar">Dev/Lovable</div><div class="at">Bygger sajten</div></div></div><div class="badge bv">Väntar</div></div>
+      <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">C</div><div><div class="an">Cleo</div><div class="ar">Design</div><div class="at">Visuell identitet</div></div></div><div class="badge bv">Väntar</div></div>
+      <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">N</div><div><div class="an">Nyx</div><div class="ar">Content</div><div class="at">Texter och sociala medier</div></div></div><div class="badge bv">Väntar</div></div>
+      <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">C</div><div><div class="an">Cato</div><div class="ar">Tillväxt</div><div class="at">Lag-outreach</div></div></div><div class="badge bv">Väntar</div></div>
+    </div></div>
   </div>
 
   <!-- ISO -->
   <div id="v-iso" class="view">
-    <div class="view active" style="flex:1">
-      <div class="scroll">
-        <div class="stitle">ISO-plattformen team</div>
-        <div class="ac"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517">V</div><div><div class="an">Vera</div><div class="ar">Projektchef</div><div class="at">Koordinerar ISO-plattformen</div></div></div><div class="badge bv">Väntar</div></div>
-        <div class="ac"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517">A</div><div><div class="an">Ajax</div><div class="ar">Dev</div><div class="at">Plattformsutveckling</div></div></div><div class="badge bv">Väntar</div></div>
-        <div class="ac"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517">D</div><div><div class="an">Dion</div><div class="ar">Strategi</div><div class="at">Pilotkunder och positionering</div></div></div><div class="badge bv">Väntar</div></div>
-        <div class="ac"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517">L</div><div><div class="an">Lyra</div><div class="ar">Content</div><div class="at">Guider och whitepapers</div></div></div><div class="badge bv">Väntar</div></div>
-        <div class="ac"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517">Z</div><div><div class="an">Zeno</div><div class="ar">Tillväxt</div><div class="at">LinkedIn och partnerships</div></div></div><div class="badge bv">Väntar</div></div>
-      </div>
-    </div>
+    <div class="view active" style="flex:1"><div class="scroll">
+      <div class="stitle">ISO-plattformen</div>
+      <div class="ac"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517">V</div><div><div class="an">Vera</div><div class="ar">Projektchef</div><div class="at">Koordinerar ISO</div></div></div><div class="badge bv">Väntar</div></div>
+      <div class="ac"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517">A</div><div><div class="an">Ajax</div><div class="ar">Dev</div><div class="at">Plattformsutveckling</div></div></div><div class="badge bv">Väntar</div></div>
+      <div class="ac"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517">D</div><div><div class="an">Dion</div><div class="ar">Strategi</div><div class="at">Pilotkunder</div></div></div><div class="badge bv">Väntar</div></div>
+      <div class="ac"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517">L</div><div><div class="an">Lyra</div><div class="ar">Content</div><div class="at">Guider och whitepapers</div></div></div><div class="badge bv">Väntar</div></div>
+      <div class="ac"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517">Z</div><div><div class="an">Zeno</div><div class="ar">Tillväxt</div><div class="at">LinkedIn och partnerships</div></div></div><div class="badge bv">Väntar</div></div>
+    </div></div>
   </div>
 
   <!-- PERSONAL -->
   <div id="v-personal" class="view">
     <div class="topbar" style="border-top:1px solid var(--b1)">
-      <div style="font-size:13px;font-weight:600">Alla agenter <span style="font-size:11px;color:var(--t3);font-weight:400;margin-left:6px">15 totalt · 3 projekt</span></div>
+      <div style="font-size:13px;font-weight:600">Alla agenter <span style="font-size:11px;color:var(--t3);font-weight:400;margin-left:6px">15 totalt</span></div>
       <div class="pbar">
         <button class="pbtn active" onclick="setPeriod('dag',this)">Idag</button>
         <button class="pbtn" onclick="setPeriod('vecka',this)">Vecka</button>
@@ -281,14 +349,10 @@ textarea::placeholder{color:var(--t3)}
       </div>
     </div>
     <div class="scroll">
-      <div class="stitle">Ledning</div>
-      <div class="pgrid" id="pg-lead"></div>
-      <div class="stitle" style="margin-top:18px">My-time</div>
-      <div class="pgrid" id="pg-mytime"></div>
-      <div class="stitle" style="margin-top:18px">Team2wear</div>
-      <div class="pgrid" id="pg-team2wear"></div>
-      <div class="stitle" style="margin-top:18px">ISO-plattformen</div>
-      <div class="pgrid" id="pg-iso"></div>
+      <div class="stitle">Ledning</div><div class="pgrid" id="pg-lead"></div>
+      <div class="stitle" style="margin-top:18px">My-time</div><div class="pgrid" id="pg-mt"></div>
+      <div class="stitle" style="margin-top:18px">Team2wear</div><div class="pgrid" id="pg-t2"></div>
+      <div class="stitle" style="margin-top:18px">ISO-plattformen</div><div class="pgrid" id="pg-iso"></div>
     </div>
   </div>
 
@@ -297,21 +361,19 @@ textarea::placeholder{color:var(--t3)}
     <div class="scroll">
       <div class="new-proj">
         <div class="np-title">🌈 Iris skapar ditt nya team</div>
-        <input class="np-input" id="np-name" placeholder="Projektnamn (t.ex. Projekt 4)" />
-        <textarea class="np-input" id="np-desc" placeholder="Beskriv projektet kort — vad är det, vem är det för?" rows="3" style="resize:none"></textarea>
-        <button class="np-btn" onclick="createTeam()" id="np-btn">Iris skapar teamet</button>
+        <input class="form-input" id="np-name" placeholder="Projektnamn" />
+        <textarea class="form-input" id="np-desc" placeholder="Beskriv projektet kort" rows="3" style="resize:none"></textarea>
+        <button class="form-btn" onclick="createTeam()" id="np-btn">Iris skapar teamet</button>
       </div>
       <div id="np-result" style="display:none">
-        <div class="card">
-          <div class="ct">Iris har skapat ditt team</div>
-          <div id="np-team"></div>
-        </div>
+        <div class="card"><div class="ct">Iris har skapat ditt team</div><div id="np-team"></div></div>
       </div>
     </div>
   </div>
 
 </main>
 
+<!-- PERSON MODAL -->
 <div class="modal-ov" id="modal" onclick="closeModal(event)">
   <div class="modal">
     <div class="mh"><div class="mt2" id="m-title">Agent</div><button class="mc2" onclick="document.getElementById('modal').classList.remove('open')">✕</button></div>
@@ -319,31 +381,53 @@ textarea::placeholder{color:var(--t3)}
   </div>
 </div>
 
+<!-- ADD CHIEF MODAL -->
+<div class="modal-ov" id="chief-modal" onclick="closeChiefModal(event)">
+  <div class="modal">
+    <div class="mh">
+      <div class="mt2">Lägg till ny Chief</div>
+      <button class="mc2" onclick="document.getElementById('chief-modal').classList.remove('open')">✕</button>
+    </div>
+    <label class="form-label">Namn</label>
+    <input class="form-input" id="c-name" placeholder="T.ex. Nova" />
+    <label class="form-label">Titel</label>
+    <input class="form-input" id="c-title" placeholder="T.ex. Chief of Strategy" />
+    <label class="form-label">Ansvarsområde</label>
+    <textarea class="form-input" id="c-desc" placeholder="Vad ansvarar denna Chief för?" rows="3" style="resize:none"></textarea>
+    <label class="form-label">Färg</label>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <div onclick="selectColor('#1D9E75')" style="width:24px;height:24px;border-radius:50%;background:#1D9E75;cursor:pointer;border:2px solid transparent" id="color-green"></div>
+      <div onclick="selectColor('#378ADD')" style="width:24px;height:24px;border-radius:50%;background:#378ADD;cursor:pointer;border:2px solid transparent" id="color-blue"></div>
+      <div onclick="selectColor('#BA7517')" style="width:24px;height:24px;border-radius:50%;background:#BA7517;cursor:pointer;border:2px solid transparent" id="color-amber"></div>
+      <div onclick="selectColor('#D85A30')" style="width:24px;height:24px;border-radius:50%;background:#D85A30;cursor:pointer;border:2px solid transparent" id="color-red"></div>
+      <div onclick="selectColor('#7F77DD')" style="width:24px;height:24px;border-radius:50%;background:#7F77DD;cursor:pointer;border:2px solid transparent" id="color-iris"></div>
+    </div>
+    <button class="form-btn" onclick="saveChief()">Lägg till i ledningsrummet</button>
+  </div>
+</div>
+
 <script>
 const BASE = window.location.origin;
-let history = [];
+
+// STATE
+let histories = { all: [], iris: [] };
+let chiefs = {
+  iris: {
+    name: 'Iris', title: 'Chief of Staff', color: '#7F77DD',
+    system: `Du heter Iris och är Chief of Staff. Du koordinerar alla projekt och deras projektledare.
+Personlighet: Skarp och direkt. Max 150 ord.
+Projekt: My-time (Sam+team), Team2wear (Leo+team), ISO-plattformen (Vera+team).
+När du delegerar: → [AgentNamn]: [uppgift]
+Svara på svenska.`
+  }
+};
+let activeChief = 'all';
 let loading = false;
 let period = 'dag';
+let selectedColor = '#1D9E75';
+let projHistories = { mytime: [], team2wear: [], iso: [] };
 
-const PERSONS = {
-  iris:  {name:'Iris',role:'Chief of Staff',proj:'Alla',c:'#7F77DD',bg:'#7F77DD22',p:92,tags:['Koordinering','Delegering','Prioritering'],stats:{dag:{t:8,k:6,s:'4m'},vecka:{t:42,k:38,s:'4m'},manad:{t:168,k:155,s:'4m'}},log:['Idag 08:15 — Morgonbriefing skickad','Idag 08:23 — Delegerat 4 uppgifter till Sam','Idag 09:10 — Teamstatus uppdaterad']},
-  sam:   {name:'Sam',role:'Projektchef',proj:'My-time',c:'#7F77DD',bg:'#534AB722',p:87,tags:['Planering','Delegering','Uppföljning'],stats:{dag:{t:6,k:5,s:'5m'},vecka:{t:30,k:28,s:'5m'},manad:{t:120,k:112,s:'5m'}},log:['Idag 08:23 — Mottog instruktion från Iris','Idag 08:25 — Delegerade till teamet']},
-  alex:  {name:'Alex',role:'Dev',proj:'My-time',c:'#1D9E75',bg:'#1D9E7522',p:78,tags:['Kod','Buggar','Betalflöde'],stats:{dag:{t:4,k:4,s:'12m'},vecka:{t:18,k:17,s:'11m'},manad:{t:72,k:69,s:'11m'}},log:['Idag — Fixat 2 friktionspunkter i betalflödet','Igår — Åtgärdat 2 buggar']},
-  maya:  {name:'Maya',role:'Strategi',proj:'My-time',c:'#1D9E75',bg:'#1D9E7522',p:85,tags:['Strategi','Marknad','Konkurrens'],stats:{dag:{t:3,k:3,s:'8m'},vecka:{t:14,k:13,s:'8m'},manad:{t:56,k:52,s:'8m'}},log:['Idag — Early adopter-paket klart','Igår — Konkurrensanalys klar']},
-  lina:  {name:'Lina',role:'Content',proj:'My-time',c:'#1D9E75',bg:'#1D9E7522',p:95,tags:['Content','Mejl','Sociala medier'],stats:{dag:{t:5,k:5,s:'6m'},vecka:{t:22,k:21,s:'6m'},manad:{t:88,k:84,s:'6m'}},log:['Idag — Mejl skickat till 2 early adopters','Igår — Nyhetsbrev skickat']},
-  robin: {name:'Robin',role:'Tillväxt',proj:'My-time',c:'#1D9E75',bg:'#1D9E7522',p:72,tags:['SEO','Tillväxt','Konvertering'],stats:{dag:{t:2,k:2,s:'9m'},vecka:{t:11,k:10,s:'9m'},manad:{t:44,k:40,s:'9m'}},log:['Idag — CTA uppflyttad på landningssida','Igår — SEO-rapport klar']},
-  leo:   {name:'Leo',role:'Projektchef',proj:'Team2wear',c:'#1D9E75',bg:'#1D9E7522',p:80,tags:['Planering','Sport','E-handel'],stats:{dag:{t:3,k:2,s:'6m'},vecka:{t:15,k:12,s:'6m'},manad:{t:60,k:48,s:'6m'}},log:['Idag — Briefat teamet om veckoplan']},
-  rex:   {name:'Rex',role:'Dev/Lovable',proj:'Team2wear',c:'#1D9E75',bg:'#1D9E7522',p:75,tags:['Lovable','Frontend','E-handel'],stats:{dag:{t:2,k:2,s:'15m'},vecka:{t:10,k:8,s:'14m'},manad:{t:40,k:32,s:'14m'}},log:['Idag — Produktsida under uppbyggnad']},
-  cleo:  {name:'Cleo',role:'Design',proj:'Team2wear',c:'#1D9E75',bg:'#1D9E7522',p:88,tags:['Design','Varumärke','UX'],stats:{dag:{t:3,k:3,s:'10m'},vecka:{t:15,k:14,s:'10m'},manad:{t:60,k:55,s:'10m'}},log:['Idag — Färgpalett och logotyp klar']},
-  nyx:   {name:'Nyx',role:'Content',proj:'Team2wear',c:'#1D9E75',bg:'#1D9E7522',p:82,tags:['Content','Sport','Sociala medier'],stats:{dag:{t:4,k:3,s:'7m'},vecka:{t:18,k:15,s:'7m'},manad:{t:72,k:60,s:'7m'}},log:['Idag — Instagram-plan utkast klart']},
-  cato:  {name:'Cato',role:'Tillväxt',proj:'Team2wear',c:'#1D9E75',bg:'#1D9E7522',p:70,tags:['Outreach','Lag','Konvertering'],stats:{dag:{t:2,k:1,s:'11m'},vecka:{t:10,k:7,s:'11m'},manad:{t:40,k:28,s:'11m'}},log:['Idag — Lista på 10 motionslag att kontakta']},
-  vera:  {name:'Vera',role:'Projektchef',proj:'ISO',c:'#BA7517',bg:'#BA751722',p:83,tags:['Planering','ISO','SaaS'],stats:{dag:{t:3,k:3,s:'7m'},vecka:{t:15,k:14,s:'7m'},manad:{t:60,k:55,s:'7m'}},log:['Idag — MVP-scope definierat']},
-  ajax:  {name:'Ajax',role:'Dev',proj:'ISO',c:'#BA7517',bg:'#BA751722',p:79,tags:['Kod','Dokumenthantering','SaaS'],stats:{dag:{t:4,k:3,s:'13m'},vecka:{t:18,k:14,s:'13m'},manad:{t:72,k:56,s:'13m'}},log:['Idag — Datamodell för dokumenthantering']},
-  dion:  {name:'Dion',role:'Strategi',proj:'ISO',c:'#BA7517',bg:'#BA751722',p:86,tags:['B2B','ISO','Pilotkunder'],stats:{dag:{t:3,k:3,s:'9m'},vecka:{t:14,k:13,s:'9m'},manad:{t:56,k:51,s:'9m'}},log:['Idag — 5 pilotföretag identifierade']},
-  lyra:  {name:'Lyra',role:'Content',proj:'ISO',c:'#BA7517',bg:'#BA751722',p:90,tags:['Guider','Whitepaper','B2B'],stats:{dag:{t:4,k:4,s:'8m'},vecka:{t:18,k:18,s:'8m'},manad:{t:72,k:70,s:'8m'}},log:['Idag — Guide om ISO 9001 påbörjad']},
-  zeno:  {name:'Zeno',role:'Tillväxt',proj:'ISO',c:'#BA7517',bg:'#BA751722',p:74,tags:['LinkedIn','Partnerships','B2B'],stats:{dag:{t:2,k:2,s:'10m'},vecka:{t:10,k:9,s:'10m'},manad:{t:40,k:36,s:'10m'}},log:['Idag — LinkedIn-strategi utkast klart']}
-};
-
+// SEND till ledningsrum
 async function send() {
   const inp = document.getElementById('inp');
   const text = inp.value.trim();
@@ -352,49 +436,145 @@ async function send() {
   loading = true;
   document.getElementById('sbtn').disabled = true;
 
-  addMsg('user', text, 'Du', null, null, null);
-  history.push({role:'user', content:text});
+  addMsg('msgs', 'user', text, 'Du', null, null, null);
 
-  const te = addTyping('Iris');
+  const chiefKeys = activeChief === 'all' ? Object.keys(chiefs) : [activeChief];
 
-  try {
-    const res = await fetch(`${BASE}/api/chat`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({messages: history})
-    });
-    const data = await res.json();
-    te.remove();
+  for (const key of chiefKeys) {
+    const chief = chiefs[key];
+    if (!histories[key]) histories[key] = [];
+    histories[key].push({role:'user', content:text});
 
-    if (data.error) throw new Error(data.error);
-
-    history.push({role:'assistant', content:data.iris});
-    addIrisMsg(data.iris, data.delegations || []);
-
-    for (const ag of (data.agents || [])) {
-      addMsg('agent', ag.reply, `${ag.name} — ${ag.role}`, ag.name[0], ag.isSummary ? '#534AB722' : '#1D9E7522', ag.isSummary ? '#7F77DD' : '#1D9E75');
+    const te = addTyping('msgs', chief.name);
+    try {
+      const res = await fetch(`${BASE}/api/chat`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({messages: histories[key], system: chief.system})
+      });
+      const data = await res.json();
+      te.remove();
+      if (data.error) throw new Error(data.error);
+      histories[key].push({role:'assistant', content:data.iris});
+      addChiefMsg('msgs', chief, data.iris, data.delegations||[]);
+      for (const ag of (data.agents||[])) {
+        addMsg('msgs','agent',ag.reply,`${ag.name} — ${ag.role}`,ag.name[0],ag.isSummary?'#534AB722':'#1D9E7522',ag.isSummary?'#7F77DD':'#1D9E75');
+      }
+    } catch(e) {
+      te.remove();
+      addMsg('msgs','agent',`Kunde inte nå ${chief.name}: ${e.message}`,chief.name,chief.name[0],chief.color+'22',chief.color);
     }
-  } catch(e) {
-    te.remove();
-    addMsg('agent', `Kunde inte nå Iris: ${e.message}`, 'Iris', 'I', '#7F77DD22', '#a09ae8');
   }
 
   loading = false;
   document.getElementById('sbtn').disabled = false;
 }
 
-function addIrisMsg(text, dels) {
-  const c = document.getElementById('msgs');
+// SEND till projekt
+async function sendProj(proj) {
+  const inp = document.getElementById(`inp-${proj}`);
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = ''; inp.style.height = 'auto';
+
+  const msgsId = `msgs-${proj}`;
+  addMsg(msgsId, 'user', text, 'Du', null, null, null);
+  if (!projHistories[proj]) projHistories[proj] = [];
+  projHistories[proj].push({role:'user', content:text});
+
+  const te = addTyping(msgsId, 'Sam');
+  try {
+    const res = await fetch(`${BASE}/api/chat`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({messages: projHistories[proj]})
+    });
+    const data = await res.json();
+    te.remove();
+    projHistories[proj].push({role:'assistant', content:data.iris});
+    addMsg(msgsId,'agent',data.iris,'Sam — Projektchef','S','#534AB722','#7F77DD');
+    for (const ag of (data.agents||[])) {
+      addMsg(msgsId,'agent',ag.reply,`${ag.name} — ${ag.role}`,ag.name[0],'#1D9E7522','#1D9E75');
+    }
+  } catch(e) {
+    te.remove();
+  }
+}
+
+function handleKeyProj(e, proj) {
+  if (e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendProj(proj);}
+}
+
+// CHIEFS
+function selectChief(key, btn) {
+  activeChief = key;
+  document.querySelectorAll('.chief-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('inp').placeholder = key==='all' ? 'Skriv till alla Chiefs...' : `Skriv till ${chiefs[key]?.name||'Chief'}...`;
+}
+
+function addChiefModal() {
+  document.getElementById('chief-modal').classList.add('open');
+}
+
+function closeChiefModal(e) {
+  if (e.target===document.getElementById('chief-modal')) document.getElementById('chief-modal').classList.remove('open');
+}
+
+function selectColor(c) {
+  selectedColor = c;
+  document.querySelectorAll('#chief-modal [onclick^="selectColor"]').forEach(el=>{
+    el.style.border = '2px solid transparent';
+  });
+  event.target.style.border = `2px solid white`;
+}
+
+function saveChief() {
+  const name = document.getElementById('c-name').value.trim();
+  const title = document.getElementById('c-title').value.trim();
+  const desc = document.getElementById('c-desc').value.trim();
+  if (!name||!title) { alert('Fyll i namn och titel'); return; }
+
+  const key = name.toLowerCase();
+  chiefs[key] = {
+    name, title, color: selectedColor,
+    system: `Du heter ${name} och är ${title}. ${desc}
+Du rapporterar direkt till grundaren och samarbetar med Iris (Chief of Staff).
+Var skarp och konkret. Max 120 ord. Svara på svenska.`
+  };
+  histories[key] = [];
+
+  // Lägg till i chiefs bar
+  const bar = document.getElementById('chiefs-bar');
+  const addBtn = bar.lastElementChild;
+  const btn = document.createElement('button');
+  btn.className = 'chief-btn';
+  btn.id = `cb-${key}`;
+  btn.onclick = () => selectChief(key, btn);
+  btn.innerHTML = `<div class="chief-av" style="background:${selectedColor}22;color:${selectedColor}">${name[0]}</div><span>${name}</span><div class="chief-dot"></div>`;
+  bar.insertBefore(btn, addBtn);
+
+  // Hälsningsmeddelande
+  addChiefMsg('msgs', chiefs[key], `Hej! Jag heter ${name} och är din ${title}. ${desc ? desc : 'Redo att hjälpa dig.'} Vad vill du fokusera på?`, []);
+
+  document.getElementById('chief-modal').classList.remove('open');
+  document.getElementById('c-name').value = '';
+  document.getElementById('c-title').value = '';
+  document.getElementById('c-desc').value = '';
+}
+
+// MSG HELPERS
+function addChiefMsg(container, chief, text, dels) {
+  const c = document.getElementById(container);
   const d = document.createElement('div');
   d.className = 'msg agent';
   const t = now();
-  let dh = dels.length > 0 ? `<div class="dels">${dels.map(dl=>`<div class="drow"><div class="dot da"></div>${dl.agent} — ${dl.task}</div>`).join('')}</div>` : '';
-  d.innerHTML = `<div class="mav" style="background:#7F77DD22;color:#a09ae8">I</div><div><div class="mname">Iris — Chief of Staff</div><div class="bub"><div class="itag">● Chief of Staff</div>${esc(text).replace(/\n/g,'<br>')}${dh}</div><div class="mtime">${t}</div></div>`;
+  let dh = dels.length>0 ? `<div class="dels">${dels.map(dl=>`<div class="drow"><div class="dot da"></div>${dl.agent} — ${dl.task}</div>`).join('')}</div>` : '';
+  d.innerHTML = `<div class="mav" style="background:${chief.color}22;color:${chief.color}">${chief.name[0]}</div><div><div class="mname">${chief.name} — ${chief.title}</div><div class="bub"><div class="ctag" style="background:${chief.color}22;color:${chief.color}">● ${chief.title}</div>${esc(text).replace(/\n/g,'<br>')}${dh}</div><div class="mtime">${t}</div></div>`;
   c.appendChild(d); c.scrollTop = c.scrollHeight;
 }
 
-function addMsg(type, text, name, init, bg, color) {
-  const c = document.getElementById('msgs');
+function addMsg(container, type, text, name, init, bg, color) {
+  const c = document.getElementById(container);
+  if (!c) return;
   const d = document.createElement('div');
   d.className = `msg ${type}`;
   const avs = type==='agent' ? `background:${bg||'#1D9E7522'};color:${color||'#1D9E75'}` : 'background:#2a2a2a;color:#999';
@@ -403,8 +583,8 @@ function addMsg(type, text, name, init, bg, color) {
   c.appendChild(d); c.scrollTop = c.scrollHeight;
 }
 
-function addTyping(name) {
-  const c = document.getElementById('msgs');
+function addTyping(container, name) {
+  const c = document.getElementById(container);
   const d = document.createElement('div');
   d.className = 'msg agent';
   d.innerHTML = `<div class="mav" style="background:#2a2a2a;color:#666">${name[0]}</div><div><div class="mname">${name} skriver...</div><div class="typing"><span></span><span></span><span></span></div></div>`;
@@ -412,78 +592,29 @@ function addTyping(name) {
   return d;
 }
 
-async function createTeam() {
-  const name = document.getElementById('np-name').value.trim();
-  const desc = document.getElementById('np-desc').value.trim();
-  if (!name || !desc) { alert('Fyll i namn och beskrivning'); return; }
-
-  const btn = document.getElementById('np-btn');
-  btn.disabled = true; btn.textContent = 'Iris skapar teamet...';
-
-  try {
-    const res = await fetch(`${BASE}/api/create-team`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({projectName:name, description:desc})
-    });
-    const data = await res.json();
-
-    if (data.error) throw new Error(data.error);
-
-    document.getElementById('np-result').style.display = 'block';
-    document.getElementById('np-team').innerHTML = data.team.map(a =>
-      `<div class="di"><div class="dn">${a.name}</div><div class="dt"><strong>${a.role}</strong> — ${a.system}</div></div>`
-    ).join('');
-
-    // Lägg till i sidebar
-    const colors = ['#378ADD','#D85A30','#7F77DD'];
-    const c = colors[Math.floor(Math.random()*colors.length)];
-    const abbr = name.substring(0,2).toUpperCase();
-    const id = name.toLowerCase().replace(/\s/g,'-');
-    document.getElementById('extra-projects').innerHTML += `
-      <div class="ni" onclick="showProj('${id}',this)">
-        <div class="nav-av" style="background:${c}22;color:${c}">${abbr}</div>
-        <div><div class="nn">${name}</div><div class="ns">${data.team.length} agenter · ny</div></div>
-      </div>`;
-
-  } catch(e) {
-    alert('Kunde inte skapa team: ' + e.message);
-  }
-
-  btn.disabled = false; btn.textContent = 'Iris skapar teamet';
-}
-
-function showProj(id, el) {
+// VIEW SWITCHING
+function showView(id, el) {
   document.querySelectorAll('[id^="v-"]').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
   if (el) el.classList.add('active');
 
   const v = document.getElementById('v-'+id);
-  if (v) { v.classList.add('active'); }
+  if (v) v.classList.add('active');
 
   const info = {
-    mytime:    ['My-time','Tidsrapportering för småteam · MVP-fas','#7F77DD',true],
-    team2wear: ['Team2wear','Idrottsställ för motionslag · Lovable','#1D9E75',false],
-    iso:       ['ISO-plattformen','Digital ISO-revisionsberedskap · SaaS','#BA7517',false],
-    personal:  ['Personal','Alla agenter · produktivitet','#378ADD',false],
-    newproj:   ['Nytt projekt','Iris skapar ditt team automatiskt','#iris',false]
+    ledning:   ['Ledningsrum','Din dagliga dialog med Iris och Chiefs','var(--iris)',false],
+    mytime:    ['My-time','Tidsrapportering för småteam · MVP-fas','var(--iris)',true],
+    team2wear: ['Team2wear','Idrottsställ för motionslag · Lovable','var(--green)',false],
+    iso:       ['ISO-plattformen','Digital ISO-revisionsberedskap','var(--amber)',false],
+    personal:  ['Personal','Alla agenter · produktivitet','var(--blue)',false],
+    newproj:   ['Nytt projekt','Iris skapar ditt team automatiskt','var(--iris)',false]
   };
-  const i = info[id] || ['Projekt','','#7F77DD',false];
+  const i = info[id]||['','','var(--iris)',false];
   document.getElementById('pname').textContent = i[0];
   document.getElementById('pdesc').textContent = i[1];
   document.getElementById('pdot').style.background = i[2];
   document.getElementById('tabs').style.display = i[3] ? 'flex' : 'none';
-
   if (id==='personal') renderPersonnel(period);
-}
-
-function showNewProj() {
-  document.querySelectorAll('[id^="v-"]').forEach(v=>v.classList.remove('active'));
-  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
-  document.getElementById('v-newproj').classList.add('active');
-  document.getElementById('pname').textContent = 'Nytt projekt';
-  document.getElementById('pdesc').textContent = 'Iris skapar ditt team automatiskt';
-  document.getElementById('tabs').style.display = 'none';
 }
 
 function switchTab(tab, btn) {
@@ -493,54 +624,63 @@ function switchTab(tab, btn) {
   btn.classList.add('active');
 }
 
-function setPeriod(p, btn) {
-  period = p;
-  document.querySelectorAll('.pbtn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderPersonnel(p);
+// CREATE TEAM
+async function createTeam() {
+  const name = document.getElementById('np-name').value.trim();
+  const desc = document.getElementById('np-desc').value.trim();
+  if (!name||!desc) { alert('Fyll i namn och beskrivning'); return; }
+  const btn = document.getElementById('np-btn');
+  btn.disabled=true; btn.textContent='Iris skapar teamet...';
+  try {
+    const res = await fetch(`${BASE}/api/create-team`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({projectName:name,description:desc})});
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    document.getElementById('np-result').style.display='block';
+    document.getElementById('np-team').innerHTML=data.team.map(a=>`<div class="di"><div class="dn">${a.name}</div><div class="dt"><strong>${a.role}</strong> — ${a.system}</div></div>`).join('');
+    const colors=['#378ADD','#D85A30','#7F77DD'];
+    const c=colors[Math.floor(Math.random()*colors.length)];
+    const abbr=name.substring(0,2).toUpperCase();
+    const pid=name.toLowerCase().replace(/\s/g,'-');
+    document.getElementById('extra-projects').innerHTML+=`<div class="ni" onclick="showView('${pid}',this)"><div class="nav-av" style="background:${c}22;color:${c}">${abbr}</div><div><div class="nn">${name}</div><div class="ns">${data.team.length} agenter · ny</div></div></div>`;
+  } catch(e) { alert('Fel: '+e.message); }
+  btn.disabled=false; btn.textContent='Iris skapar teamet';
 }
 
-function renderPersonnel(p) {
-  const lead = ['iris','sam'];
-  const mt = ['alex','maya','lina','robin'];
-  const t2 = ['leo','rex','cleo','nyx','cato'];
-  const iso = ['vera','ajax','dion','lyra','zeno'];
-  document.getElementById('pg-lead').innerHTML = lead.map(k=>pcard(k,p)).join('');
-  document.getElementById('pg-mytime').innerHTML = mt.map(k=>pcard(k,p)).join('');
-  document.getElementById('pg-team2wear').innerHTML = t2.map(k=>pcard(k,p)).join('');
-  document.getElementById('pg-iso').innerHTML = iso.map(k=>pcard(k,p)).join('');
-}
+// PERSONAL
+const PERSONS = {
+  iris:{name:'Iris',role:'Chief of Staff',proj:'Alla',c:'#7F77DD',bg:'#7F77DD22',p:92,tags:['Koordinering','Delegering'],stats:{dag:{t:8,k:6,s:'4m'},vecka:{t:42,k:38,s:'4m'},manad:{t:168,k:155,s:'4m'}},log:['Idag 08:15 — Morgonbriefing skickad','Idag 08:23 — Delegerat 4 uppgifter till Sam']},
+  sam:{name:'Sam',role:'Projektchef',proj:'My-time',c:'#7F77DD',bg:'#534AB722',p:87,tags:['Planering','Delegering'],stats:{dag:{t:6,k:5,s:'5m'},vecka:{t:30,k:28,s:'5m'},manad:{t:120,k:112,s:'5m'}},log:['Idag 08:23 — Mottog instruktion från Iris','Idag 08:25 — Delegerade till teamet']},
+  alex:{name:'Alex',role:'Dev',proj:'My-time',c:'#1D9E75',bg:'#1D9E7522',p:78,tags:['Kod','Buggar'],stats:{dag:{t:4,k:4,s:'12m'},vecka:{t:18,k:17,s:'11m'},manad:{t:72,k:69,s:'11m'}},log:['Idag — Fixat 2 friktionspunkter']},
+  maya:{name:'Maya',role:'Strategi',proj:'My-time',c:'#1D9E75',bg:'#1D9E7522',p:85,tags:['Strategi','Marknad'],stats:{dag:{t:3,k:3,s:'8m'},vecka:{t:14,k:13,s:'8m'},manad:{t:56,k:52,s:'8m'}},log:['Idag — Early adopter-paket klart']},
+  lina:{name:'Lina',role:'Content',proj:'My-time',c:'#1D9E75',bg:'#1D9E7522',p:95,tags:['Content','Mejl'],stats:{dag:{t:5,k:5,s:'6m'},vecka:{t:22,k:21,s:'6m'},manad:{t:88,k:84,s:'6m'}},log:['Idag — Mejl skickat till 2 early adopters']},
+  robin:{name:'Robin',role:'Tillväxt',proj:'My-time',c:'#1D9E75',bg:'#1D9E7522',p:72,tags:['SEO','Tillväxt'],stats:{dag:{t:2,k:2,s:'9m'},vecka:{t:11,k:10,s:'9m'},manad:{t:44,k:40,s:'9m'}},log:['Idag — CTA uppflyttad']},
+  leo:{name:'Leo',role:'Projektchef',proj:'Team2wear',c:'#1D9E75',bg:'#1D9E7522',p:80,tags:['Sport','E-handel'],stats:{dag:{t:3,k:2,s:'6m'},vecka:{t:15,k:12,s:'6m'},manad:{t:60,k:48,s:'6m'}},log:['Idag — Briefat teamet']},
+  rex:{name:'Rex',role:'Dev/Lovable',proj:'Team2wear',c:'#1D9E75',bg:'#1D9E7522',p:75,tags:['Lovable','Frontend'],stats:{dag:{t:2,k:2,s:'15m'},vecka:{t:10,k:8,s:'14m'},manad:{t:40,k:32,s:'14m'}},log:['Idag — Produktsida under byggnad']},
+  cleo:{name:'Cleo',role:'Design',proj:'Team2wear',c:'#1D9E75',bg:'#1D9E7522',p:88,tags:['Design','UX'],stats:{dag:{t:3,k:3,s:'10m'},vecka:{t:15,k:14,s:'10m'},manad:{t:60,k:55,s:'10m'}},log:['Idag — Färgpalett klar']},
+  nyx:{name:'Nyx',role:'Content',proj:'Team2wear',c:'#1D9E75',bg:'#1D9E7522',p:82,tags:['Content','Sport'],stats:{dag:{t:4,k:3,s:'7m'},vecka:{t:18,k:15,s:'7m'},manad:{t:72,k:60,s:'7m'}},log:['Idag — Instagram-plan utkast']},
+  cato:{name:'Cato',role:'Tillväxt',proj:'Team2wear',c:'#1D9E75',bg:'#1D9E7522',p:70,tags:['Outreach','Lag'],stats:{dag:{t:2,k:1,s:'11m'},vecka:{t:10,k:7,s:'11m'},manad:{t:40,k:28,s:'11m'}},log:['Idag — Lista på 10 motionslag']},
+  vera:{name:'Vera',role:'Projektchef',proj:'ISO',c:'#BA7517',bg:'#BA751722',p:83,tags:['ISO','SaaS'],stats:{dag:{t:3,k:3,s:'7m'},vecka:{t:15,k:14,s:'7m'},manad:{t:60,k:55,s:'7m'}},log:['Idag — MVP-scope definierat']},
+  ajax:{name:'Ajax',role:'Dev',proj:'ISO',c:'#BA7517',bg:'#BA751722',p:79,tags:['Kod','SaaS'],stats:{dag:{t:4,k:3,s:'13m'},vecka:{t:18,k:14,s:'13m'},manad:{t:72,k:56,s:'13m'}},log:['Idag — Datamodell klar']},
+  dion:{name:'Dion',role:'Strategi',proj:'ISO',c:'#BA7517',bg:'#BA751722',p:86,tags:['B2B','ISO'],stats:{dag:{t:3,k:3,s:'9m'},vecka:{t:14,k:13,s:'9m'},manad:{t:56,k:51,s:'9m'}},log:['Idag — 5 pilotföretag identifierade']},
+  lyra:{name:'Lyra',role:'Content',proj:'ISO',c:'#BA7517',bg:'#BA751722',p:90,tags:['Guider','B2B'],stats:{dag:{t:4,k:4,s:'8m'},vecka:{t:18,k:18,s:'8m'},manad:{t:72,k:70,s:'8m'}},log:['Idag — Guide om ISO 9001 påbörjad']},
+  zeno:{name:'Zeno',role:'Tillväxt',proj:'ISO',c:'#BA7517',bg:'#BA751722',p:74,tags:['LinkedIn','B2B'],stats:{dag:{t:2,k:2,s:'10m'},vecka:{t:10,k:9,s:'10m'},manad:{t:40,k:36,s:'10m'}},log:['Idag — LinkedIn-strategi klar']}
+};
 
-function pcard(k, p) {
-  const a = PERSONS[k];
-  const s = a.stats[p];
-  const bc = a.p>=90?'var(--green)':a.p>=75?'var(--amber)':'var(--red)';
-  return `<div class="pcard" onclick="openPerson('${k}')">
-    <div class="ph"><div class="pav" style="background:${a.bg};color:${a.c}">${a.name[0]}</div><div><div class="pn">${a.name}</div><div class="pr">${a.role}</div><div class="pp">${a.proj}</div></div></div>
-    <div class="ps">
-      <div class="pst"><div class="psv">${s.t}</div><div class="psl">Uppgifter</div></div>
-      <div class="pst"><div class="psv">${s.k}</div><div class="psl">Klara</div></div>
-      <div class="pst"><div class="psv">${s.s}</div><div class="psl">Svarstid</div></div>
-    </div>
-    <div class="pb"><div class="pbl"><span>Produktivitet</span><span>${a.p}%</span></div><div class="pbr"><div class="pbf" style="width:${a.p}%;background:${bc}"></div></div></div>
-    <div class="ptags">${a.tags.map(t=>`<div class="ptag">${t}</div>`).join('')}</div>
-  </div>`;
+function setPeriod(p,btn){period=p;document.querySelectorAll('.pbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderPersonnel(p);}
+function renderPersonnel(p){
+  document.getElementById('pg-lead').innerHTML=['iris','sam'].map(k=>pcard(k,p)).join('');
+  document.getElementById('pg-mt').innerHTML=['alex','maya','lina','robin'].map(k=>pcard(k,p)).join('');
+  document.getElementById('pg-t2').innerHTML=['leo','rex','cleo','nyx','cato'].map(k=>pcard(k,p)).join('');
+  document.getElementById('pg-iso').innerHTML=['vera','ajax','dion','lyra','zeno'].map(k=>pcard(k,p)).join('');
 }
-
-function openPerson(k) {
-  const a = PERSONS[k];
-  const bc = a.p>=90?'var(--green)':a.p>=75?'var(--amber)':'var(--red)';
-  document.getElementById('m-title').textContent = `${a.name} — ${a.role}`;
-  document.getElementById('m-body').innerHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
-      <div class="pst"><div class="psv">${a.stats.dag.t}</div><div class="psl">Idag</div></div>
-      <div class="pst"><div class="psv">${a.stats.vecka.t}</div><div class="psl">Vecka</div></div>
-      <div class="pst"><div class="psv">${a.stats.manad.t}</div><div class="psl">Månad</div></div>
-    </div>
-    <div class="pb" style="margin-bottom:14px"><div class="pbl"><span>Produktivitet</span><span>${a.p}%</span></div><div class="pbr"><div class="pbf" style="width:${a.p}%;background:${bc}"></div></div></div>
-    <div class="ptags" style="margin-bottom:14px">${a.tags.map(t=>`<div class="ptag">${t}</div>`).join('')}</div>
-    <div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Aktivitetslogg</div>
-    <div class="al">${a.log.map(l=>{const pts=l.split(' — ');return `<div class="ali"><div class="ad2">${pts[0]}</div><div class="at2">${pts.slice(1).join(' — ')}</div></div>`}).join('')}</div>`;
+function pcard(k,p){
+  const a=PERSONS[k];const s=a.stats[p];const bc=a.p>=90?'var(--green)':a.p>=75?'var(--amber)':'var(--red)';
+  return `<div class="pcard" onclick="openPerson('${k}')"><div class="ph"><div class="pav" style="background:${a.bg};color:${a.c}">${a.name[0]}</div><div><div class="pn">${a.name}</div><div class="pr">${a.role}</div><div class="pp">${a.proj}</div></div></div><div class="ps"><div class="pst"><div class="psv">${s.t}</div><div class="psl">Uppgifter</div></div><div class="pst"><div class="psv">${s.k}</div><div class="psl">Klara</div></div><div class="pst"><div class="psv">${s.s}</div><div class="psl">Svarstid</div></div></div><div class="pb"><div class="pbl"><span>Produktivitet</span><span>${a.p}%</span></div><div class="pbr"><div class="pbf" style="width:${a.p}%;background:${bc}"></div></div></div><div class="ptags">${a.tags.map(t=>`<div class="ptag">${t}</div>`).join('')}</div></div>`;
+}
+function openPerson(k){
+  const a=PERSONS[k];const bc=a.p>=90?'var(--green)':a.p>=75?'var(--amber)':'var(--red)';
+  document.getElementById('m-title').textContent=`${a.name} — ${a.role}`;
+  document.getElementById('m-body').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px"><div class="pst"><div class="psv">${a.stats.dag.t}</div><div class="psl">Idag</div></div><div class="pst"><div class="psv">${a.stats.vecka.t}</div><div class="psl">Vecka</div></div><div class="pst"><div class="psv">${a.stats.manad.t}</div><div class="psl">Månad</div></div></div><div class="pb" style="margin-bottom:14px"><div class="pbl"><span>Produktivitet</span><span>${a.p}%</span></div><div class="pbr"><div class="pbf" style="width:${a.p}%;background:${bc}"></div></div></div><div class="ptags" style="margin-bottom:14px">${a.tags.map(t=>`<div class="ptag">${t}</div>`).join('')}</div><div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Aktivitetslogg</div><div class="al">${a.log.map(l=>{const pts=l.split(' — ');return `<div class="ali"><div class="ad2">${pts[0]}</div><div class="at2">${pts.slice(1).join(' — ')}</div></div>`}).join('')}</div>`;
   document.getElementById('modal').classList.add('open');
 }
 
@@ -554,4 +694,3 @@ renderPersonnel('dag');
 </script>
 </body>
 </html>
-
