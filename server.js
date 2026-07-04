@@ -74,22 +74,35 @@ async function callClaude(system, messages, maxTokens = 1000) {
 
 // Skicka mejl via Nodemailer (one.com SMTP port 587)
 async function sendEmailSMTP(to, subject, bodyText, fromName) {
-  const transporter = nodemailer.createTransporter({
-    host: SMTP_HOST,
-    port: 587,
-    secure: false,
-    requireTLS: true,
-    auth: { user: SMTP_USER, pass: SMTP_PASS },
-    tls: { rejectUnauthorized: false }
+  return new Promise((resolve, reject) => {
+    const body = JSON.stringify({
+      from: `${fromName || 'Iris'} <onboarding@resend.dev>`,
+      to: [to],
+      subject,
+      html: bodyText
+    });
+    const options = {
+      hostname: 'api.resend.com',
+      path: '/emails',
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(body)
+      }
+    };
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try { resolve(JSON.parse(data)); }
+        catch(e) { reject(e); }
+      });
+    });
+    req.on('error', reject);
+    req.write(body);
+    req.end();
   });
-  const info = await transporter.sendMail({
-    from: `${fromName || 'Iris'} <${SMTP_USER}>`,
-    to,
-    subject,
-    text: bodyText.replace(/<[^>]*>/g, ''),
-    html: bodyText
-  });
-  return { success: true, messageId: info.messageId };
 }
 
 // Parsea delegationer
