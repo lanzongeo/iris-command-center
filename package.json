@@ -1,6 +1,6 @@
 {
   "name": "iris-command-center",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Iris Command Center Backend",
   "main": "server.js",
   "scripts": {
