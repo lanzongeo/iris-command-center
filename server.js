@@ -76,7 +76,7 @@ async function callClaude(system, messages, maxTokens = 1000) {
 async function sendEmailSMTP(to, subject, bodyText, fromName) {
   return new Promise((resolve, reject) => {
     const body = JSON.stringify({
-      from: `${fromName || 'Iris'} <onboarding@resend.dev>`,
+      from: `${fromName || 'Iris'} <iris@send.my-time.se>`,
       to: [to],
       subject,
       html: bodyText
