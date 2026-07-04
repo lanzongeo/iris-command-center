@@ -1,3 +1,4 @@
+const nodemailer = require('nodemailer');
 const express = require('express');
 const cors = require('cors');
 const https = require('https');
@@ -71,84 +72,24 @@ async function callClaude(system, messages, maxTokens = 1000) {
   });
 }
 
-// Skicka mejl via SMTP (one.com port 465 = implicit TLS)
+// Skicka mejl via Nodemailer (one.com SMTP port 587)
 async function sendEmailSMTP(to, subject, bodyText, fromName) {
-  return new Promise((resolve, reject) => {
-    const from = `${fromName || 'Iris'} <${SMTP_USER}>`;
-    const msgId = `<${Date.now()}@my-time.se>`;
-    const boundary = `boundary_${Date.now()}`;
-
-    const emailBody = [
-      `Message-ID: ${msgId}`,
-      `From: ${from}`,
-      `To: ${to}`,
-      `Subject: ${subject}`,
-      `MIME-Version: 1.0`,
-      `Content-Type: multipart/alternative; boundary="${boundary}"`,
-      ``,
-      `--${boundary}`,
-      `Content-Type: text/plain; charset=utf-8`,
-      ``,
-      bodyText.replace(/<[^>]*>/g, ''),
-      ``,
-      `--${boundary}`,
-      `Content-Type: text/html; charset=utf-8`,
-      ``,
-      bodyText,
-      ``,
-      `--${boundary}--`
-    ].join('\r\n');
-
-    const tls = require('tls');
-    let socket = tls.connect({ host: SMTP_HOST, port: SMTP_PORT, rejectUnauthorized: false });
-    let step = 0;
-    let buffer = '';
-
-    socket.on('data', (data) => {
-      buffer += data.toString();
-      const lines = buffer.split('\r\n');
-      buffer = lines.pop();
-
-      for (const line of lines) {
-        console.log('SMTP <', line);
-        if (line.startsWith('220') && step === 0) {
-          step = 1;
-          socket.write(`EHLO my-time.se\r\n`);
-        } else if ((line.startsWith('250') || line.startsWith('220')) && step === 1) {
-          if (line.includes('250 ') || line.startsWith('250-SMTPUTF8') || line === '250 SMTPUTF8') {
-            step = 2;
-            const auth = Buffer.from(`\0${SMTP_USER}\0${SMTP_PASS}`).toString('base64');
-            socket.write(`AUTH PLAIN ${auth}\r\n`);
-          }
-        } else if (line.startsWith('235') && step === 2) {
-          step = 3;
-          socket.write(`MAIL FROM:<${SMTP_USER}>\r\n`);
-        } else if (line.startsWith('250') && step === 3) {
-          step = 4;
-          socket.write(`RCPT TO:<${to}>\r\n`);
-        } else if (line.startsWith('250') && step === 4) {
-          step = 5;
-          socket.write(`DATA\r\n`);
-        } else if (line.startsWith('354') && step === 5) {
-          step = 6;
-          socket.write(emailBody + '\r\n.\r\n');
-        } else if (line.startsWith('250') && step === 6) {
-          step = 7;
-          socket.write(`QUIT\r\n`);
-          resolve({ success: true, messageId: msgId });
-        } else if (line.startsWith('221') && step === 7) {
-          socket.destroy();
-        } else if (line.startsWith('5')) {
-          reject(new Error(`SMTP error: ${line}`));
-          socket.destroy();
-        }
-      }
-    });
-
-    socket.on('error', reject);
-    socket.on('timeout', () => reject(new Error('SMTP timeout')));
-    socket.setTimeout(30000);
+  const transporter = nodemailer.createTransporter({
+    host: SMTP_HOST,
+    port: 587,
+    secure: false,
+    requireTLS: true,
+    auth: { user: SMTP_USER, pass: SMTP_PASS },
+    tls: { rejectUnauthorized: false }
   });
+  const info = await transporter.sendMail({
+    from: `${fromName || 'Iris'} <${SMTP_USER}>`,
+    to,
+    subject,
+    text: bodyText.replace(/<[^>]*>/g, ''),
+    html: bodyText
+  });
+  return { success: true, messageId: info.messageId };
 }
 
 // Parsea delegationer
