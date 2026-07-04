@@ -151,6 +151,18 @@ textarea::placeholder{color:var(--t3)}
 .new-proj{background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:20px;margin-bottom:16px}
 .np-title{font-size:13px;font-weight:600;margin-bottom:14px}
 
+.email-draft{margin-top:10px;background:var(--s3);border:1px solid var(--iris);border-radius:8px;padding:12px;font-size:12px}
+.email-draft-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.email-draft-label{color:#a09ae8;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.email-draft-meta{display:flex;flex-direction:column;gap:3px;margin-bottom:8px;color:var(--t2)}
+.email-draft-meta span{font-size:11px}
+.email-draft-body{color:var(--t1);line-height:1.6;margin-bottom:10px;max-height:120px;overflow-y:auto}
+.email-actions{display:flex;gap:6px}
+.btn-send{background:var(--green);border:none;color:white;padding:5px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--f);transition:opacity .12s}
+.btn-send:hover{opacity:.85}
+.btn-dismiss{background:none;border:1px solid var(--b2);color:var(--t2);padding:5px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--f);transition:all .12s}
+.btn-dismiss:hover{border-color:var(--t2);color:var(--t1)}
+.btn-sent{background:var(--gd);border:none;color:#5DCAA5;padding:5px 14px;border-radius:6px;font-size:12px;font-family:var(--f)}
 .empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--t3)}
 .ei{font-size:28px}.et{font-size:13px;font-weight:500;color:var(--t2)}.ed{font-size:12px}
 
@@ -459,6 +471,12 @@ async function send() {
       for (const ag of (data.agents||[])) {
         addMsg('msgs','agent',ag.reply,`${ag.name} — ${ag.role}`,ag.name[0],ag.isSummary?'#534AB722':'#1D9E7522',ag.isSummary?'#7F77DD':'#1D9E75');
       }
+      for (const sent of (data.sentEmails||[])) {
+        addSentEmail('msgs', sent);
+      }
+      for (const draft of (data.emailDrafts||[])) {
+        addEmailDraft('msgs', draft);
+      }
     } catch(e) {
       te.remove();
       addMsg('msgs','agent',`Kunde inte nå ${chief.name}: ${e.message}`,chief.name,chief.name[0],chief.color+'22',chief.color);
@@ -682,6 +700,89 @@ function openPerson(k){
   document.getElementById('m-title').textContent=`${a.name} — ${a.role}`;
   document.getElementById('m-body').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px"><div class="pst"><div class="psv">${a.stats.dag.t}</div><div class="psl">Idag</div></div><div class="pst"><div class="psv">${a.stats.vecka.t}</div><div class="psl">Vecka</div></div><div class="pst"><div class="psv">${a.stats.manad.t}</div><div class="psl">Månad</div></div></div><div class="pb" style="margin-bottom:14px"><div class="pbl"><span>Produktivitet</span><span>${a.p}%</span></div><div class="pbr"><div class="pbf" style="width:${a.p}%;background:${bc}"></div></div></div><div class="ptags" style="margin-bottom:14px">${a.tags.map(t=>`<div class="ptag">${t}</div>`).join('')}</div><div style="font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Aktivitetslogg</div><div class="al">${a.log.map(l=>{const pts=l.split(' — ');return `<div class="ali"><div class="ad2">${pts[0]}</div><div class="at2">${pts.slice(1).join(' — ')}</div></div>`}).join('')}</div>`;
   document.getElementById('modal').classList.add('open');
+}
+
+function addSentEmail(container, sent) {
+  const c = document.getElementById(container);
+  const div = document.createElement('div');
+  div.className = 'msg agent';
+  div.innerHTML = `
+    <div class="mav" style="background:#1D9E7522;color:#1D9E75">✉</div>
+    <div>
+      <div class="mname">Iris — Mejl skickat automatiskt</div>
+      <div class="bub" style="background:var(--gd);border-color:rgba(29,158,117,0.3)">
+        <div style="font-size:12px;color:#5DCAA5;font-weight:600;margin-bottom:4px">✓ Mejl levererat</div>
+        <div style="font-size:12px;color:var(--t2)">Till: ${esc(sent.to)}</div>
+        <div style="font-size:12px;color:var(--t2)">Ämne: ${esc(sent.subject)}</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:4px">Skickat av ${sent.agent} via iris@send.my-time.se</div>
+      </div>
+      <div class="mtime">${now()}</div>
+    </div>`;
+  c.appendChild(div);
+  c.scrollTop = c.scrollHeight;
+}
+
+function addEmailDraft(container, draft) {
+  const c = document.getElementById(container);
+  const id = 'draft-' + Date.now();
+  const div = document.createElement('div');
+  div.className = 'msg agent';
+  div.innerHTML = `
+    <div class="mav" style="background:#1D9E7522;color:#1D9E75">L</div>
+    <div style="max-width:500px">
+      <div class="mname">Lina — Mejlutkast redo</div>
+      <div class="bub" style="padding:0;background:none;border:none">
+        <div class="email-draft" id="${id}">
+          <div class="email-draft-header">
+            <span class="email-draft-label">✉ Mejl redo att skicka</span>
+          </div>
+          <div class="email-draft-meta">
+            <span><strong>Till:</strong> ${esc(draft.to || 'okänd')}</span>
+            <span><strong>Ämne:</strong> ${esc(draft.subject || 'Meddelande från My-time')}</span>
+            <span><strong>Från:</strong> iris@send.my-time.se</span>
+          </div>
+          <div class="email-draft-body">${esc(draft.fullText).replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>
+          <div class="email-actions">
+            <button class="btn-send" onclick="approveDraft('${id}', '${esc(draft.to)}', '${esc(draft.subject)}', \`${draft.fullText.replace(/`/g,"'")}\`)">
+              ✓ Skicka mejl
+            </button>
+            <button class="btn-dismiss" onclick="document.getElementById('${id}').style.opacity='.4'">
+              Avvisa
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="mtime">${now()}</div>
+    </div>`;
+  c.appendChild(div);
+  c.scrollTop = c.scrollHeight;
+}
+
+async function approveDraft(draftId, to, subject, html) {
+  const draft = document.getElementById(draftId);
+  const btn = draft.querySelector('.btn-send');
+  btn.disabled = true;
+  btn.textContent = 'Skickar...';
+  
+  try {
+    const res = await fetch(`${BASE}/api/approve-email`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ to, subject, html, fromName: 'My-time' })
+    });
+    const data = await res.json();
+    
+    if (data.success) {
+      draft.querySelector('.email-actions').innerHTML = '<span class="btn-sent">✓ Mejl skickat!</span>';
+      addMsg('msgs', 'agent', `Mejlet skickades till ${to}. ✓`, 'Iris — Chief of Staff', 'I', '#7F77DD22', '#a09ae8');
+    } else {
+      btn.textContent = 'Fel — försök igen';
+      btn.disabled = false;
+    }
+  } catch(e) {
+    btn.textContent = 'Fel — försök igen';
+    btn.disabled = false;
+  }
 }
 
 function closeModal(e){if(e.target===document.getElementById('modal'))document.getElementById('modal').classList.remove('open')}
