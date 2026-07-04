@@ -107,23 +107,42 @@ Team: Ajax (Dev), Dion (Strategi), Lyra (Content), Zeno (Tillväxt). Max 80 ord.
 
 // Anropa Claude API
 async function callClaude(system, messages, maxTokens = 1000) {
-  const res = await fetch(ANTHROPIC_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': ANTHROPIC_KEY,
-      'anthropic-version': '2023-06-01'
-    },
-    body: JSON.stringify({
+  return new Promise((resolve, reject) => {
+    const body = JSON.stringify({
       model: 'claude-sonnet-4-6',
       max_tokens: maxTokens,
       system,
       messages
-    })
+    });
+
+    const options = {
+      hostname: 'api.anthropic.com',
+      path: '/v1/messages',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_KEY,
+        'anthropic-version': '2023-06-01',
+        'Content-Length': Buffer.byteLength(body)
+      }
+    };
+
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          const parsed = JSON.parse(data);
+          if (parsed.error) reject(new Error(parsed.error.message));
+          else resolve(parsed.content?.[0]?.text || '');
+        } catch(e) { reject(e); }
+      });
+    });
+
+    req.on('error', reject);
+    req.write(body);
+    req.end();
   });
-  const data = await res.json();
-  if (data.error) throw new Error(data.error.message);
-  return data.content?.[0]?.text || '';
 }
 
 // Parsea delegationer från Iris svar
