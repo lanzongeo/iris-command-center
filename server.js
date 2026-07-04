@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const https = require('https');
+const http = require('http');
+const net = require('net');
 const path = require('path');
 
 const app = express();
@@ -11,7 +13,10 @@ app.use((req, res, next) => { res.setTimeout(120000); next(); });
 
 const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
 const NOTION_KEY = process.env.NOTION_API_KEY;
-const RESEND_KEY = process.env.RESEND_API_KEY;
+const SMTP_HOST = process.env.SMTP_HOST || 'send.one.com';
+const SMTP_PORT = parseInt(process.env.SMTP_PORT) || 465;
+const SMTP_USER = process.env.SMTP_USER;
+const SMTP_PASS = process.env.SMTP_PASS;
 const NOTION_URL = 'https://api.notion.com/v1';
 
 // Agent systempromptar
@@ -41,25 +46,13 @@ Svara på svenska.`
   zeno: { name: 'Zeno', role: 'Tillväxt · ISO-plattformen', system: `Du är Zeno, tillväxtagent för ISO-plattformen. LinkedIn och partnerships. Max 80 ord. Svenska.` }
 };
 
-// Anropa Claude API via https
+// Anropa Claude API
 async function callClaude(system, messages, maxTokens = 1000) {
   return new Promise((resolve, reject) => {
-    const body = JSON.stringify({
-      model: 'claude-sonnet-4-6',
-      max_tokens: maxTokens,
-      system,
-      messages
-    });
+    const body = JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: maxTokens, system, messages });
     const options = {
-      hostname: 'api.anthropic.com',
-      path: '/v1/messages',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_KEY,
-        'anthropic-version': '2023-06-01',
-        'Content-Length': Buffer.byteLength(body)
-      }
+      hostname: 'api.anthropic.com', path: '/v1/messages', method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': ANTHROPIC_KEY, 'anthropic-version': '2023-06-01', 'Content-Length': Buffer.byteLength(body) }
     };
     const req = https.request(options, (res) => {
       let data = '';
@@ -78,36 +71,83 @@ async function callClaude(system, messages, maxTokens = 1000) {
   });
 }
 
-// Skicka mejl via Resend
-async function sendEmail(to, subject, html, from) {
+// Skicka mejl via SMTP (one.com port 465 = implicit TLS)
+async function sendEmailSMTP(to, subject, bodyText, fromName) {
   return new Promise((resolve, reject) => {
-    const body = JSON.stringify({
-      from: from || 'Iris <iris@send.my-time.se>',
-      to: [to],
-      subject,
-      html
-    });
-    const options = {
-      hostname: 'api.resend.com',
-      path: '/emails',
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${RESEND_KEY}`,
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(body)
+    const from = `${fromName || 'Iris'} <${SMTP_USER}>`;
+    const msgId = `<${Date.now()}@my-time.se>`;
+    const boundary = `boundary_${Date.now()}`;
+
+    const emailBody = [
+      `Message-ID: ${msgId}`,
+      `From: ${from}`,
+      `To: ${to}`,
+      `Subject: ${subject}`,
+      `MIME-Version: 1.0`,
+      `Content-Type: multipart/alternative; boundary="${boundary}"`,
+      ``,
+      `--${boundary}`,
+      `Content-Type: text/plain; charset=utf-8`,
+      ``,
+      bodyText.replace(/<[^>]*>/g, ''),
+      ``,
+      `--${boundary}`,
+      `Content-Type: text/html; charset=utf-8`,
+      ``,
+      bodyText,
+      ``,
+      `--${boundary}--`
+    ].join('\r\n');
+
+    const tls = require('tls');
+    let socket = tls.connect({ host: SMTP_HOST, port: SMTP_PORT, rejectUnauthorized: false });
+    let step = 0;
+    let buffer = '';
+
+    socket.on('data', (data) => {
+      buffer += data.toString();
+      const lines = buffer.split('\r\n');
+      buffer = lines.pop();
+
+      for (const line of lines) {
+        console.log('SMTP <', line);
+        if (line.startsWith('220') && step === 0) {
+          step = 1;
+          socket.write(`EHLO my-time.se\r\n`);
+        } else if ((line.startsWith('250') || line.startsWith('220')) && step === 1) {
+          if (line.includes('250 ') || line.startsWith('250-SMTPUTF8') || line === '250 SMTPUTF8') {
+            step = 2;
+            const auth = Buffer.from(`\0${SMTP_USER}\0${SMTP_PASS}`).toString('base64');
+            socket.write(`AUTH PLAIN ${auth}\r\n`);
+          }
+        } else if (line.startsWith('235') && step === 2) {
+          step = 3;
+          socket.write(`MAIL FROM:<${SMTP_USER}>\r\n`);
+        } else if (line.startsWith('250') && step === 3) {
+          step = 4;
+          socket.write(`RCPT TO:<${to}>\r\n`);
+        } else if (line.startsWith('250') && step === 4) {
+          step = 5;
+          socket.write(`DATA\r\n`);
+        } else if (line.startsWith('354') && step === 5) {
+          step = 6;
+          socket.write(emailBody + '\r\n.\r\n');
+        } else if (line.startsWith('250') && step === 6) {
+          step = 7;
+          socket.write(`QUIT\r\n`);
+          resolve({ success: true, messageId: msgId });
+        } else if (line.startsWith('221') && step === 7) {
+          socket.destroy();
+        } else if (line.startsWith('5')) {
+          reject(new Error(`SMTP error: ${line}`));
+          socket.destroy();
+        }
       }
-    };
-    const req = https.request(options, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        try { resolve(JSON.parse(data)); }
-        catch(e) { reject(e); }
-      });
     });
-    req.on('error', reject);
-    req.write(body);
-    req.end();
+
+    socket.on('error', reject);
+    socket.on('timeout', () => reject(new Error('SMTP timeout')));
+    socket.setTimeout(30000);
   });
 }
 
@@ -123,12 +163,10 @@ function parseDelegations(text) {
 }
 
 function findAgent(name) {
-  return Object.keys(AGENTS).find(k =>
-    k === name.toLowerCase() || AGENTS[k].name.toLowerCase() === name.toLowerCase()
-  );
+  return Object.keys(AGENTS).find(k => k === name.toLowerCase() || AGENTS[k].name.toLowerCase() === name.toLowerCase());
 }
 
-// ENDPOINT: Chatta med Iris eller custom chief
+// ENDPOINT: Chatta med Iris
 app.post('/api/chat', async (req, res) => {
   try {
     const { messages, system } = req.body;
@@ -143,9 +181,7 @@ app.post('/api/chat', async (req, res) => {
         if (!agentKey) return null;
         const agent = AGENTS[agentKey];
         try {
-          const reply = await callClaude(agent.system, [
-            { role: 'user', content: `Instruktion: ${del.task}` }
-          ], 500);
+          const reply = await callClaude(agent.system, [{ role: 'user', content: `Instruktion: ${del.task}` }], 500);
           return { key: agentKey, name: agent.name, role: agent.role, reply };
         } catch(e) {
           return { key: agentKey, name: agent.name, role: agent.role, reply: 'Kunde inte svara just nu.' };
@@ -174,9 +210,8 @@ app.post('/api/chat', async (req, res) => {
 // ENDPOINT: Skicka mejl
 app.post('/api/send-email', async (req, res) => {
   try {
-    const { to, subject, body, from, preview } = req.body;
+    const { to, subject, body, fromName, preview } = req.body;
 
-    // Om preview — generera mejl med Lina utan att skicka
     if (preview) {
       const linaReply = await callClaude(AGENTS.lina.system, [{
         role: 'user',
@@ -185,32 +220,32 @@ app.post('/api/send-email', async (req, res) => {
       return res.json({ preview: linaReply, success: true });
     }
 
-    // Skicka på riktigt
-    const result = await sendEmail(to, subject, body, from);
-    res.json({ success: true, id: result.id });
+    const result = await sendEmailSMTP(to, subject, body, fromName);
+    res.json({ success: true, result });
   } catch(e) {
-    console.error(e);
+    console.error('Email error:', e);
     res.status(500).json({ error: e.message });
   }
 });
 
-// ENDPOINT: Alex hämtar användare från My-time (förberedelse för Playwright)
-app.post('/api/fetch-users', async (req, res) => {
+// ENDPOINT: Testa mejl
+app.post('/api/test-email', async (req, res) => {
   try {
-    const { url, credentials } = req.body;
-    // Playwright-integration kommer här
-    // För nu returnerar vi ett mock-svar
-    const alexReply = await callClaude(AGENTS.alex.system, [{
-      role: 'user',
-      content: `Du ska logga in på ${url} och hämta lista på företagsadmins. Beskriv exakt vilka steg du skulle ta och vilken data du skulle returnera.`
-    }], 500);
-    res.json({ success: true, alex: alexReply, note: 'Playwright-integration aktiveras i nästa steg' });
+    const { to } = req.body;
+    const result = await sendEmailSMTP(
+      to,
+      'Test från Iris Command Center',
+      '<h2>Hej!</h2><p>Detta är ett testmejl från Iris Command Center. Om du ser detta fungerar mejlintegrationen!</p><p>— Iris</p>',
+      'Iris'
+    );
+    res.json({ success: true, result });
   } catch(e) {
+    console.error('Test email error:', e);
     res.status(500).json({ error: e.message });
   }
 });
 
-// ENDPOINT: Skapa nytt team via Iris
+// ENDPOINT: Skapa nytt team
 app.post('/api/create-team', async (req, res) => {
   try {
     const { projectName, description, parentPageId } = req.body;
@@ -219,31 +254,26 @@ Generera 5 agenter med unika korta antika namn.
 Svara ENDAST med JSON:
 {"team":[{"name":"...","role":"Projektchef","system":"..."},{"name":"...","role":"Dev","system":"..."},{"name":"...","role":"Strategi","system":"..."},{"name":"...","role":"Content","system":"..."},{"name":"...","role":"Tillväxt","system":"..."}]}`;
 
-    const teamJson = await callClaude(
-      'Du är Iris. Svara ENDAST med valid JSON, inga kommentarer eller markdown.',
-      [{ role: 'user', content: teamPrompt }]
-    );
+    const teamJson = await callClaude('Du är Iris. Svara ENDAST med valid JSON.', [{ role: 'user', content: teamPrompt }]);
     const clean = teamJson.replace(/```json|```/g, '').trim();
     const { team } = JSON.parse(clean);
-
-    if (NOTION_KEY && parentPageId) {
-      await fetch(`${NOTION_URL}/pages`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${NOTION_KEY}`, 'Content-Type': 'application/json', 'Notion-Version': '2022-06-28' },
-        body: JSON.stringify({
-          parent: { page_id: parentPageId },
-          properties: { title: { title: [{ text: { content: `📁 ${projectName}` } }] } },
-          children: [
-            { object: 'block', type: 'heading_1', heading_1: { rich_text: [{ text: { content: projectName } }] } },
-            { object: 'block', type: 'paragraph', paragraph: { rich_text: [{ text: { content: description } }] } },
-            ...team.map(a => ({ object: 'block', type: 'bulleted_list_item', bulleted_list_item: { rich_text: [{ text: { content: `${a.name} — ${a.role}` } }] } }))
-          ]
-        })
-      });
-    }
     res.json({ team, success: true });
   } catch(e) {
     console.error(e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ENDPOINT: Fetch users (Playwright-förberedelse)
+app.post('/api/fetch-users', async (req, res) => {
+  try {
+    const { url } = req.body;
+    const alexReply = await callClaude(AGENTS.alex.system, [{
+      role: 'user',
+      content: `Du ska logga in på ${url} och hämta lista på företagsadmins. Beskriv exakt vilka steg du skulle ta.`
+    }], 500);
+    res.json({ success: true, alex: alexReply, note: 'Playwright-integration aktiveras i nästa steg' });
+  } catch(e) {
     res.status(500).json({ error: e.message });
   }
 });
@@ -263,7 +293,12 @@ app.post('/api/notion/update', async (req, res) => {
   }
 });
 
-app.get('/health', (req, res) => res.json({ status: 'Iris är online', agents: Object.keys(AGENTS).length, resend: !!RESEND_KEY }));
+app.get('/health', (req, res) => res.json({
+  status: 'Iris är online',
+  agents: Object.keys(AGENTS).length,
+  smtp: !!SMTP_USER,
+  notion: !!NOTION_KEY
+}));
 
 const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () => console.log(`Iris Command Center körs på port ${PORT}`));
