@@ -720,6 +720,60 @@ app.get('/health', (req, res) => res.json({
   notion: !!NOTION_KEY
 }));
 
+
+// ============================================================
+// DAGLIG BRIEFING — Iris samlar status var 24:e timme
+// ============================================================
+async function runDailyBriefing() {
+  console.log('Iris: Startar daglig briefing...');
+  try {
+    // Samla status från projektcheferna
+    const [samStatus, leoStatus, veraStatus] = await Promise.all([
+      callClaude(AGENTS.sam.system, [{ role: 'user', content: 'Ge mig en kort statusrapport för My-time: vad är klart, vad är blockerat, vad är nästa steg mot betalande kund? Max 60 ord.' }], 200),
+      callClaude(AGENTS.leo.system, [{ role: 'user', content: 'Ge mig en kort statusrapport för Team2wear: vad är klart, vad är blockerat, vad är nästa steg? Max 60 ord.' }], 200),
+      callClaude(AGENTS.vera.system, [{ role: 'user', content: 'Ge mig en kort statusrapport för ISO-plattformen: vad är klart, vad är blockerat, vad är nästa steg? Max 60 ord.' }], 200),
+    ]);
+
+    // Iris sammanfattar
+    const summary = await callClaude(AGENTS.iris.system, [{
+      role: 'user',
+      content: `Sammanfatta dessa projektstatusrapporter i din återkopplingsstruktur (✅ KLART, 🔴 EJ KLART, ⚡ VIKTIGAST). Max 120 ord totalt.
+
+My-time (Sam): ${samStatus}
+Team2wear (Leo): ${leoStatus}
+ISO-plattformen (Vera): ${veraStatus}`
+    }], 400);
+
+    // Spara i Iris Notion-minne
+    const datum = new Date().toISOString().split('T')[0];
+    await appendAgentMemory('iris', `Daglig briefing ${datum}: ${summary.replace(/\n/g, ' ')}`);
+
+    console.log('Iris: Daglig briefing klar och sparad i Notion.');
+    return summary;
+  } catch(e) {
+    console.error('Briefing error:', e.message);
+    return null;
+  }
+}
+
+// ENDPOINT: Trigga briefing manuellt
+app.post('/api/briefing', async (req, res) => {
+  try {
+    const summary = await runDailyBriefing();
+    res.json({ success: true, summary });
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Cron: kör daglig briefing var 24:e timme
+const BRIEFING_INTERVAL = 24 * 60 * 60 * 1000;
+setTimeout(() => {
+  runDailyBriefing();
+  setInterval(runDailyBriefing, BRIEFING_INTERVAL);
+}, BRIEFING_INTERVAL);
+console.log('Iris: Daglig briefing schemalagd (var 24:e timme).');
+
 const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () => console.log(`Iris Command Center körs på port ${PORT}`));
 server.timeout = 120000;
