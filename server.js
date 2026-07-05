@@ -395,7 +395,8 @@ function parseDelegations(text) {
   const lines = text.split('\n');
   const dels = [];
   for (const line of lines) {
-    const m = line.match(/→\s*(\w+):\s*(.+)/);
+    const clean = line.replace(/\*\*/g, '');
+    const m = clean.match(/→\s*(\w+):\s*(.+)/);
     if (m) dels.push({ agent: m[1].toLowerCase(), task: m[2].trim() });
   }
   return dels;
