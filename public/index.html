@@ -222,6 +222,37 @@ textarea::placeholder{color:var(--t3)}
 .iris-del-time{color:var(--t3);font-size:9px;margin-top:1px}
 .iris-del-empty{font-size:11px;color:var(--t3);padding:6px 0;text-align:center}
 .iris-section-label{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;margin-top:4px}
+
+/* PROJEKT DASHBOARD */
+.proj-view{display:flex;flex-direction:column;flex:1;overflow:hidden}
+.proj-dash{display:flex;gap:8px;padding:12px 20px;border-bottom:1px solid var(--b1);background:var(--bg);flex-shrink:0;overflow-x:auto}
+.proj-dash::-webkit-scrollbar{height:3px}
+.proj-dash::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+.proj-metric{background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:10px 14px;min-width:100px;flex-shrink:0}
+.proj-metric-v{font-size:22px;font-weight:700;line-height:1}
+.proj-metric-l{font-size:10px;color:var(--t3);margin-top:3px}
+.proj-metric-t{font-size:10px;margin-top:3px}
+.proj-body{display:flex;flex:1;overflow:hidden}
+.proj-left{flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--b1)}
+.proj-right{width:260px;display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.proj-section{padding:12px 16px;border-bottom:1px solid var(--b1);font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;justify-content:space-between}
+.proj-tasks{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:8px}
+.proj-tasks::-webkit-scrollbar{width:3px}
+.proj-tasks::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+.task-item{background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:10px 12px}
+.task-item.done{opacity:.55}
+.task-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.task-title{font-size:12px;font-weight:500;color:var(--t1)}
+.task-pct{font-size:11px;font-weight:600}
+.task-agent{font-size:10px;color:var(--t3);margin-bottom:6px}
+.task-bar{height:4px;background:var(--s3);border-radius:2px;overflow:hidden}
+.task-bar-fill{height:100%;border-radius:2px;transition:width .5s}
+.task-status{font-size:10px;margin-top:5px}
+.done-list{padding:0 14px 12px;display:flex;flex-direction:column;gap:4px}
+.done-item{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--t2);padding:5px 8px;background:var(--s3);border-radius:6px}
+.done-check{color:#1D9E75;font-size:12px;flex-shrink:0}
+.done-agent{font-size:10px;color:var(--t3);margin-left:auto}
+.team-list{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:6px}
 </style>
 </head>
 <body>
@@ -318,59 +349,6 @@ textarea::placeholder{color:var(--t3)}
         </div>
       </div>
 
-      <!-- My-time KPI -->
-      <div class="proj-kpi">
-        <div class="proj-kpi-head">
-          <span class="proj-kpi-name">My-time</span>
-          <span class="proj-kpi-badge" style="background:var(--id);color:#a09ae8">Aktiv</span>
-        </div>
-        <div class="proj-kpi-metrics">
-          <div class="pkm"><div class="pkm-v" style="color:#a09ae8">25</div><div class="pkm-l">Användare</div></div>
-          <div class="pkm"><div class="pkm-v" style="color:#5DCAA5">2</div><div class="pkm-l">Testkunder</div></div>
-          <div class="pkm"><div class="pkm-v" style="color:#EF9F27">0</div><div class="pkm-l">Betalande</div></div>
-          <div class="pkm"><div class="pkm-v" style="color:var(--t2)">30d</div><div class="pkm-l">Till mål</div></div>
-        </div>
-        <div class="proj-kpi-bar">
-          <div class="proj-kpi-bar-label"><span>Mot 1 betalande kund</span><span>0%</span></div>
-          <div class="proj-kpi-bar-track"><div class="proj-kpi-bar-fill" style="width:5%;background:#7F77DD"></div></div>
-        </div>
-      </div>
-
-      <!-- Team2wear KPI -->
-      <div class="proj-kpi">
-        <div class="proj-kpi-head">
-          <span class="proj-kpi-name">Team2wear</span>
-          <span class="proj-kpi-badge" style="background:var(--gd);color:#5DCAA5">Byggs</span>
-        </div>
-        <div class="proj-kpi-metrics">
-          <div class="pkm"><div class="pkm-v" style="color:#5DCAA5">5</div><div class="pkm-l">Agenter</div></div>
-          <div class="pkm"><div class="pkm-v" style="color:var(--t2)">0</div><div class="pkm-l">Beställningar</div></div>
-          <div class="pkm"><div class="pkm-v" style="color:#EF9F27">Lovable</div><div class="pkm-l">Platform</div></div>
-          <div class="pkm"><div class="pkm-v" style="color:var(--t2)">—</div><div class="pkm-l">Launch</div></div>
-        </div>
-        <div class="proj-kpi-bar">
-          <div class="proj-kpi-bar-label"><span>Mot första beställning</span><span>10%</span></div>
-          <div class="proj-kpi-bar-track"><div class="proj-kpi-bar-fill" style="width:10%;background:#1D9E75"></div></div>
-        </div>
-      </div>
-
-      <!-- ISO KPI -->
-      <div class="proj-kpi">
-        <div class="proj-kpi-head">
-          <span class="proj-kpi-name">ISO-plattformen</span>
-          <span class="proj-kpi-badge" style="background:var(--ad);color:#EF9F27">Tidig fas</span>
-        </div>
-        <div class="proj-kpi-metrics">
-          <div class="pkm"><div class="pkm-v" style="color:#EF9F27">5</div><div class="pkm-l">Agenter</div></div>
-          <div class="pkm"><div class="pkm-v" style="color:var(--t2)">0</div><div class="pkm-l">Pilotkunder</div></div>
-          <div class="pkm"><div class="pkm-v" style="color:var(--t2)">SaaS</div><div class="pkm-l">Typ</div></div>
-          <div class="pkm"><div class="pkm-v" style="color:var(--t2)">—</div><div class="pkm-l">Launch</div></div>
-        </div>
-        <div class="proj-kpi-bar">
-          <div class="proj-kpi-bar-label"><span>Mot första pilotkund</span><span>5%</span></div>
-          <div class="proj-kpi-bar-track"><div class="proj-kpi-bar-fill" style="width:5%;background:#BA7517"></div></div>
-        </div>
-      </div>
 
     </div>
     <!-- Chiefs bar -->
@@ -414,79 +392,219 @@ textarea::placeholder{color:var(--t3)}
 
   <!-- MY-TIME -->
   <div id="v-mytime" class="view">
-    <div style="padding:10px 20px;border-bottom:1px solid var(--b1);background:var(--s1);display:flex;gap:8px;flex-shrink:0">
-      <button onclick="alexAnalyzeMytime()" style="font-size:11px;padding:5px 12px;border-radius:6px;background:var(--id);color:#a09ae8;border:1px solid var(--im);cursor:pointer;font-family:var(--f)" id="alex-btn">🔍 Alex — Analysera My-time</button>
-      <button onclick="robinSearchProspects()" style="font-size:11px;padding:5px 12px;border-radius:6px;background:var(--gd);color:#5DCAA5;border:1px solid rgba(29,158,117,0.3);cursor:pointer;font-family:var(--f)" id="robin-btn">🎯 Robin — Sök prospekt</button>
-    </div>
-    <div id="t-chat" class="view active" style="flex:1;flex-direction:column">
-      <div class="msgs" id="msgs-mytime">
-        <div class="msg agent">
-          <div class="mav" style="background:#534AB722;color:#7F77DD">S</div>
-          <div>
-            <div class="mname">Sam — Projektchef My-time</div>
-            <div class="bub"><div class="ctag" style="background:var(--id);color:#a09ae8">● My-time</div>Redo för dagens briefing. Vad är prioritet?</div>
-            <div class="mtime">Nu</div>
+    <div class="proj-view">
+
+      <!-- KPI Strip -->
+      <div class="proj-dash">
+        <div class="proj-metric">
+          <div class="proj-metric-v" style="color:#a09ae8">25</div>
+          <div class="proj-metric-l">Användare</div>
+          <div class="proj-metric-t" style="color:#5DCAA5">+0 denna vecka</div>
+        </div>
+        <div class="proj-metric">
+          <div class="proj-metric-v" style="color:#5DCAA5">2</div>
+          <div class="proj-metric-l">Testkunder</div>
+          <div class="proj-metric-t" style="color:var(--t3)">VIP-status</div>
+        </div>
+        <div class="proj-metric">
+          <div class="proj-metric-v" style="color:#EF9F27">0</div>
+          <div class="proj-metric-l">Betalande</div>
+          <div class="proj-metric-t" style="color:var(--t3)">Mål: 1 st</div>
+        </div>
+        <div class="proj-metric">
+          <div class="proj-metric-v" style="color:var(--t2)">30</div>
+          <div class="proj-metric-l">Dagar till mål</div>
+          <div class="proj-metric-t" style="color:#EF9F27">Kritisk fas</div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:6px;align-items:center;flex-shrink:0">
+          <button onclick="alexAnalyzeMytime()" style="font-size:11px;padding:5px 12px;border-radius:6px;background:var(--id);color:#a09ae8;border:1px solid var(--im);cursor:pointer;font-family:var(--f)" id="alex-btn">Alex — Analysera</button>
+          <button onclick="robinSearchProspects()" style="font-size:11px;padding:5px 12px;border-radius:6px;background:var(--gd);color:#5DCAA5;border:1px solid rgba(29,158,117,0.3);cursor:pointer;font-family:var(--f)" id="robin-btn">Robin — Prospekt</button>
+        </div>
+      </div>
+
+      <!-- Body: tasks + team -->
+      <div class="proj-body">
+
+        <!-- Vänster: Tasklista -->
+        <div class="proj-left">
+          <div class="proj-section">
+            <span>Pågående uppgifter</span>
+            <span id="mt-active-count" style="color:#EF9F27">3 aktiva</span>
+          </div>
+          <div class="proj-tasks" id="mt-tasks">
+
+            <div class="task-item">
+              <div class="task-head">
+                <span class="task-title">Testa hela My-time — Alex</span>
+                <span class="task-pct" style="color:#EF9F27">0%</span>
+              </div>
+              <div class="task-agent">Alex · Testuppdrag mottaget</div>
+              <div class="task-bar"><div class="task-bar-fill" style="width:0%;background:#7F77DD"></div></div>
+              <div class="task-status" style="color:#EF9F27">⏳ Väntar på Browserless-körning</div>
+            </div>
+
+            <div class="task-item">
+              <div class="task-head">
+                <span class="task-title">Första betalande kund — Robin</span>
+                <span class="task-pct" style="color:#EF9F27">10%</span>
+              </div>
+              <div class="task-agent">Robin · Prospektsökning igång</div>
+              <div class="task-bar"><div class="task-bar-fill" style="width:10%;background:#1D9E75"></div></div>
+              <div class="task-status" style="color:var(--t3)">⏳ Identifierar målgrupp</div>
+            </div>
+
+            <div class="task-item">
+              <div class="task-head">
+                <span class="task-title">Säljande hemsida — Lina</span>
+                <span class="task-pct" style="color:var(--t3)">0%</span>
+              </div>
+              <div class="task-agent">Lina · Väntar på testrapport</div>
+              <div class="task-bar"><div class="task-bar-fill" style="width:0%;background:#BA7517"></div></div>
+              <div class="task-status" style="color:var(--t3)">⏳ Startar efter Alex rapport</div>
+            </div>
+
+          </div>
+
+          <div class="proj-section">
+            <span>Avklarade uppgifter</span>
+            <span id="mt-done-count" style="color:#5DCAA5">0 klara</span>
+          </div>
+          <div class="done-list" id="mt-done">
+            <div style="font-size:11px;color:var(--t3);padding:6px 0;text-align:center">Inga avklarade uppgifter än</div>
           </div>
         </div>
-      </div>
-      <div class="input-area">
-        <textarea id="inp-mytime" placeholder="Skriv till Sam..." rows="1" onkeydown="handleKeyProj(event,'mytime')" oninput="resize(this)"></textarea>
-        <button class="sbtn" onclick="sendProj('mytime')" id="sbtn-mytime">
-          <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-        </button>
-      </div>
-    </div>
-    <div id="t-status" class="view">
-      <div class="scroll">
-        <div class="stitle">My-time team</div>
-        <div class="ac"><div class="ai"><div class="aav" style="background:#534AB722;color:#7F77DD">S</div><div><div class="an">Sam</div><div class="ar">Projektchef</div><div class="at">Delegerar och följer upp</div></div></div><div class="badge ba">Aktiv</div></div>
-        <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">A</div><div><div class="an">Alex</div><div class="ar">Dev</div><div class="at">Kontrollerar betalflödet</div></div></div><div class="badge bw">Jobbar</div></div>
-        <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">M</div><div><div class="an">Maya</div><div class="ar">Strategi</div><div class="at">Early adopter-erbjudande</div></div></div><div class="badge bw">Jobbar</div></div>
-        <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">L</div><div><div class="an">Lina</div><div class="ar">Content</div><div class="at">Mejl skickat</div></div></div><div class="badge ba">Klar</div></div>
-        <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">R</div><div><div class="an">Robin</div><div class="ar">Tillväxt</div><div class="at">Väntar på instruktion</div></div></div><div class="badge bv">Väntar</div></div>
-      </div>
-    </div>
-    <div id="t-progress" class="view">
-      <div class="scroll">
-        <div class="mg">
-          <div class="mc"><div class="ml">Användare</div><div class="mv">24</div><div class="mt tu">+3 denna vecka</div></div>
-          <div class="mc"><div class="ml">Early adopters</div><div class="mv">2</div><div class="mt tw">Kontaktade</div></div>
-          <div class="mc"><div class="ml">Betalande</div><div class="mv">0</div><div class="mt tn">Mål: 1 idag</div></div>
-          <div class="mc"><div class="ml">Buggar</div><div class="mv">3</div><div class="mt tw">Alex jobbar</div></div>
+
+        <!-- Höger: Team + chatt -->
+        <div class="proj-right" style="display:flex;flex-direction:column">
+          <div class="proj-section"><span>Team</span></div>
+          <div class="team-list">
+            <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#534AB722;color:#7F77DD;width:28px;height:28px;font-size:10px">S</div><div><div class="an">Sam</div><div class="ar" style="font-size:10px">Projektchef</div></div></div><div class="badge ba">Aktiv</div></div>
+            <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75;width:28px;height:28px;font-size:10px">A</div><div><div class="an">Alex</div><div class="ar" style="font-size:10px">Dev</div></div></div><div class="badge bw">Jobbar</div></div>
+            <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75;width:28px;height:28px;font-size:10px">M</div><div><div class="an">Maya</div><div class="ar" style="font-size:10px">Strategi</div></div></div><div class="badge bw">Jobbar</div></div>
+            <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75;width:28px;height:28px;font-size:10px">L</div><div><div class="an">Lina</div><div class="ar" style="font-size:10px">Content</div></div></div><div class="badge bv">Väntar</div></div>
+            <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75;width:28px;height:28px;font-size:10px">R</div><div><div class="an">Robin</div><div class="ar" style="font-size:10px">Tillväxt</div></div></div><div class="badge bw">Jobbar</div></div>
+          </div>
+          <div class="proj-section"><span>Chatt med Sam</span></div>
+          <div class="msgs" id="msgs-mytime" style="flex:1;padding:10px 14px;gap:10px">
+            <div class="msg agent">
+              <div class="mav" style="background:#534AB722;color:#7F77DD">S</div>
+              <div><div class="mname">Sam</div>
+              <div class="bub">Redo. Vad är prioritet?</div>
+              <div class="mtime">Nu</div></div>
+            </div>
+          </div>
+          <div class="input-area" style="padding:8px 14px">
+            <textarea id="inp-mytime" placeholder="Skriv till Sam..." rows="1" onkeydown="handleKeyProj(event,'mytime')" oninput="resize(this)"></textarea>
+            <button class="sbtn" onclick="sendProj('mytime')" id="sbtn-mytime">
+              <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            </button>
+          </div>
         </div>
-        <div class="card">
-          <div class="ct">Dagens leveranser</div>
-          <div class="di"><div class="dn">Lina</div><div class="dt">Mejl skickat till 2 early adopters</div></div>
-          <div class="di"><div class="dn">Maya</div><div class="dt">Early adopter-paket: 40% i 3 mån</div></div>
-          <div class="di"><div class="dn">Robin</div><div class="dt">CTA uppflyttad, konvertering +12%</div></div>
-          <div class="di"><div class="dn">Alex</div><div class="dt">2 av 3 friktionspunkter fixade</div></div>
-        </div>
+
       </div>
     </div>
   </div>
 
   <!-- TEAM2WEAR -->
   <div id="v-team2wear" class="view">
-    <div class="view active" style="flex:1"><div class="scroll">
-      <div class="stitle">Team2wear</div>
-      <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">L</div><div><div class="an">Leo</div><div class="ar">Projektchef</div><div class="at">Koordinerar Team2wear</div></div></div><div class="badge bv">Väntar</div></div>
-      <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">R</div><div><div class="an">Rex</div><div class="ar">Dev/Lovable</div><div class="at">Bygger sajten</div></div></div><div class="badge bv">Väntar</div></div>
-      <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">C</div><div><div class="an">Cleo</div><div class="ar">Design</div><div class="at">Visuell identitet</div></div></div><div class="badge bv">Väntar</div></div>
-      <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">N</div><div><div class="an">Nyx</div><div class="ar">Content</div><div class="at">Texter och sociala medier</div></div></div><div class="badge bv">Väntar</div></div>
-      <div class="ac"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75">C</div><div><div class="an">Cato</div><div class="ar">Tillväxt</div><div class="at">Lag-outreach</div></div></div><div class="badge bv">Väntar</div></div>
-    </div></div>
+    <div class="proj-view">
+      <div class="proj-dash">
+        <div class="proj-metric"><div class="proj-metric-v" style="color:#5DCAA5">0</div><div class="proj-metric-l">Beställningar</div><div class="proj-metric-t" style="color:var(--t3)">Mål: 10 lag</div></div>
+        <div class="proj-metric"><div class="proj-metric-v" style="color:#5DCAA5">5</div><div class="proj-metric-l">Agenter</div><div class="proj-metric-t" style="color:var(--t3)">Aktiva</div></div>
+        <div class="proj-metric"><div class="proj-metric-v" style="color:#EF9F27">Lovable</div><div class="proj-metric-l">Plattform</div><div class="proj-metric-t" style="color:var(--t3)">Under bygge</div></div>
+        <div class="proj-metric"><div class="proj-metric-v" style="color:var(--t2)">—</div><div class="proj-metric-l">Lansering</div><div class="proj-metric-t" style="color:var(--t3)">TBD</div></div>
+      </div>
+      <div class="proj-body">
+        <div class="proj-left">
+          <div class="proj-section"><span>Pågående uppgifter</span><span style="color:#EF9F27">2 aktiva</span></div>
+          <div class="proj-tasks">
+            <div class="task-item">
+              <div class="task-head"><span class="task-title">Bygg plattform i Lovable — Rex</span><span class="task-pct" style="color:#EF9F27">15%</span></div>
+              <div class="task-agent">Rex · Bygger produktsidor</div>
+              <div class="task-bar"><div class="task-bar-fill" style="width:15%;background:#1D9E75"></div></div>
+              <div class="task-status" style="color:var(--t3)">⏳ Pågår</div>
+            </div>
+            <div class="task-item">
+              <div class="task-head"><span class="task-title">Visuell identitet — Cleo</span><span class="task-pct" style="color:#EF9F27">10%</span></div>
+              <div class="task-agent">Cleo · Varumärkesarbete</div>
+              <div class="task-bar"><div class="task-bar-fill" style="width:10%;background:#BA7517"></div></div>
+              <div class="task-status" style="color:var(--t3)">⏳ Pågår</div>
+            </div>
+          </div>
+          <div class="proj-section"><span>Avklarade uppgifter</span><span style="color:#5DCAA5">0 klara</span></div>
+          <div class="done-list"><div style="font-size:11px;color:var(--t3);padding:6px 0;text-align:center">Inga avklarade uppgifter än</div></div>
+        </div>
+        <div class="proj-right" style="display:flex;flex-direction:column">
+          <div class="proj-section"><span>Team</span></div>
+          <div class="team-list">
+            <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75;width:28px;height:28px;font-size:10px">L</div><div><div class="an">Leo</div><div class="ar" style="font-size:10px">Projektchef</div></div></div><div class="badge ba">Aktiv</div></div>
+            <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75;width:28px;height:28px;font-size:10px">R</div><div><div class="an">Rex</div><div class="ar" style="font-size:10px">Dev/Lovable</div></div></div><div class="badge bw">Jobbar</div></div>
+            <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75;width:28px;height:28px;font-size:10px">C</div><div><div class="an">Cleo</div><div class="ar" style="font-size:10px">Design</div></div></div><div class="badge bw">Jobbar</div></div>
+            <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75;width:28px;height:28px;font-size:10px">N</div><div><div class="an">Nyx</div><div class="ar" style="font-size:10px">Content</div></div></div><div class="badge bv">Väntar</div></div>
+            <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75;width:28px;height:28px;font-size:10px">C</div><div><div class="an">Cato</div><div class="ar" style="font-size:10px">Tillväxt</div></div></div><div class="badge bv">Väntar</div></div>
+          </div>
+          <div class="proj-section"><span>Chatt med Leo</span></div>
+          <div class="msgs" id="msgs-team2wear" style="flex:1;padding:10px 14px;gap:10px">
+            <div class="msg agent"><div class="mav" style="background:#1D9E7522;color:#1D9E75">L</div><div><div class="mname">Leo</div><div class="bub">Redo. Vad behöver du?</div><div class="mtime">Nu</div></div></div>
+          </div>
+          <div class="input-area" style="padding:8px 14px">
+            <textarea id="inp-team2wear" placeholder="Skriv till Leo..." rows="1" onkeydown="handleKeyProj(event,'team2wear')" oninput="resize(this)"></textarea>
+            <button class="sbtn" onclick="sendProj('team2wear')" id="sbtn-team2wear"><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- ISO -->
   <div id="v-iso" class="view">
-    <div class="view active" style="flex:1"><div class="scroll">
-      <div class="stitle">ISO-plattformen</div>
-      <div class="ac"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517">V</div><div><div class="an">Vera</div><div class="ar">Projektchef</div><div class="at">Koordinerar ISO</div></div></div><div class="badge bv">Väntar</div></div>
-      <div class="ac"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517">A</div><div><div class="an">Ajax</div><div class="ar">Dev</div><div class="at">Plattformsutveckling</div></div></div><div class="badge bv">Väntar</div></div>
-      <div class="ac"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517">D</div><div><div class="an">Dion</div><div class="ar">Strategi</div><div class="at">Pilotkunder</div></div></div><div class="badge bv">Väntar</div></div>
-      <div class="ac"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517">L</div><div><div class="an">Lyra</div><div class="ar">Content</div><div class="at">Guider och whitepapers</div></div></div><div class="badge bv">Väntar</div></div>
-      <div class="ac"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517">Z</div><div><div class="an">Zeno</div><div class="ar">Tillväxt</div><div class="at">LinkedIn och partnerships</div></div></div><div class="badge bv">Väntar</div></div>
-    </div></div>
+    <div class="proj-view">
+      <div class="proj-dash">
+        <div class="proj-metric"><div class="proj-metric-v" style="color:#EF9F27">0</div><div class="proj-metric-l">Pilotkunder</div><div class="proj-metric-t" style="color:var(--t3)">Mål: 3 st</div></div>
+        <div class="proj-metric"><div class="proj-metric-v" style="color:#EF9F27">5</div><div class="proj-metric-l">Agenter</div><div class="proj-metric-t" style="color:var(--t3)">Aktiva</div></div>
+        <div class="proj-metric"><div class="proj-metric-v" style="color:var(--t2)">SaaS</div><div class="proj-metric-l">Produkttyp</div><div class="proj-metric-t" style="color:var(--t3)">B2B</div></div>
+        <div class="proj-metric"><div class="proj-metric-v" style="color:var(--t2)">—</div><div class="proj-metric-l">Lansering</div><div class="proj-metric-t" style="color:var(--t3)">TBD</div></div>
+      </div>
+      <div class="proj-body">
+        <div class="proj-left">
+          <div class="proj-section"><span>Pågående uppgifter</span><span style="color:#EF9F27">2 aktiva</span></div>
+          <div class="proj-tasks">
+            <div class="task-item">
+              <div class="task-head"><span class="task-title">Plattformsutveckling — Ajax</span><span class="task-pct" style="color:#EF9F27">20%</span></div>
+              <div class="task-agent">Ajax · Dokumenthantering & avvikelser</div>
+              <div class="task-bar"><div class="task-bar-fill" style="width:20%;background:#BA7517"></div></div>
+              <div class="task-status" style="color:var(--t3)">⏳ Pågår</div>
+            </div>
+            <div class="task-item">
+              <div class="task-head"><span class="task-title">Hitta pilotkunder — Zeno</span><span class="task-pct" style="color:#EF9F27">5%</span></div>
+              <div class="task-agent">Zeno · LinkedIn-outreach</div>
+              <div class="task-bar"><div class="task-bar-fill" style="width:5%;background:#EF9F27"></div></div>
+              <div class="task-status" style="color:var(--t3)">⏳ Identifierar prospects</div>
+            </div>
+          </div>
+          <div class="proj-section"><span>Avklarade uppgifter</span><span style="color:#5DCAA5">0 klara</span></div>
+          <div class="done-list"><div style="font-size:11px;color:var(--t3);padding:6px 0;text-align:center">Inga avklarade uppgifter än</div></div>
+        </div>
+        <div class="proj-right" style="display:flex;flex-direction:column">
+          <div class="proj-section"><span>Team</span></div>
+          <div class="team-list">
+            <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517;width:28px;height:28px;font-size:10px">V</div><div><div class="an">Vera</div><div class="ar" style="font-size:10px">Projektchef</div></div></div><div class="badge ba">Aktiv</div></div>
+            <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517;width:28px;height:28px;font-size:10px">A</div><div><div class="an">Ajax</div><div class="ar" style="font-size:10px">Dev</div></div></div><div class="badge bw">Jobbar</div></div>
+            <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517;width:28px;height:28px;font-size:10px">D</div><div><div class="an">Dion</div><div class="ar" style="font-size:10px">Strategi</div></div></div><div class="badge bv">Väntar</div></div>
+            <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517;width:28px;height:28px;font-size:10px">L</div><div><div class="an">Lyra</div><div class="ar" style="font-size:10px">Content</div></div></div><div class="badge bv">Väntar</div></div>
+            <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517;width:28px;height:28px;font-size:10px">Z</div><div><div class="an">Zeno</div><div class="ar" style="font-size:10px">Tillväxt</div></div></div><div class="badge bw">Jobbar</div></div>
+          </div>
+          <div class="proj-section"><span>Chatt med Vera</span></div>
+          <div class="msgs" id="msgs-iso" style="flex:1;padding:10px 14px;gap:10px">
+            <div class="msg agent"><div class="mav" style="background:#BA751722;color:#BA7517">V</div><div><div class="mname">Vera</div><div class="bub">Redo. Vad behöver du?</div><div class="mtime">Nu</div></div></div>
+          </div>
+          <div class="input-area" style="padding:8px 14px">
+            <textarea id="inp-iso" placeholder="Skriv till Vera..." rows="1" onkeydown="handleKeyProj(event,'iso')" oninput="resize(this)"></textarea>
+            <button class="sbtn" onclick="sendProj('iso')" id="sbtn-iso"><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- PERSONAL -->
