@@ -725,9 +725,12 @@ async function send() {
       te.remove();
       if (data.error) throw new Error(data.error);
       histories[key].push({role:'assistant', content:data.iris});
-      addChiefMsg('msgs', chief, data.iris, data.delegations||[]);
-      for (const ag of (data.agents||[])) {
-        addMsg('msgs','agent',ag.reply,`${ag.name} — ${ag.role}`,ag.name[0],ag.isSummary?'#534AB722':'#1D9E7522',ag.isSummary?'#7F77DD':'#1D9E75');
+      const cleanIrisReply = stripDelegations(data.iris);
+      addChiefMsg('msgs', chief, cleanIrisReply, []);
+      // Visa bara Sam-sammanfattning, inte individuella agentsvar
+      const samSummary = (data.agents||[]).find(ag => ag.isSummary);
+      if (samSummary) {
+        addMsg('msgs','agent', samSummary.reply, 'Sam — Projektchef My-time', 'S', '#534AB722', '#7F77DD');
       }
       for (const sent of (data.sentEmails||[])) {
         addSentEmail('msgs', sent);
@@ -1147,6 +1150,15 @@ function incrementIrisCount() {
   irisToday++;
   const el = document.getElementById('iris-msg-count');
   if (el) el.textContent = irisToday;
+}
+
+
+function stripDelegations(text) {
+  return text.split('\n')
+    .filter(line => !line.trim().match(/^→/))
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
 }
 
 function closeModal(e){if(e.target===document.getElementById('modal'))document.getElementById('modal').classList.remove('open')}
