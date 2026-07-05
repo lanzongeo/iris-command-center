@@ -279,6 +279,10 @@ textarea::placeholder{color:var(--t3)}
 
   <!-- MY-TIME -->
   <div id="v-mytime" class="view">
+    <div style="padding:10px 20px;border-bottom:1px solid var(--b1);background:var(--s1);display:flex;gap:8px;flex-shrink:0">
+      <button onclick="alexAnalyzeMytime()" style="font-size:11px;padding:5px 12px;border-radius:6px;background:var(--id);color:#a09ae8;border:1px solid var(--im);cursor:pointer;font-family:var(--f)" id="alex-btn">🔍 Alex — Analysera My-time</button>
+      <button onclick="robinSearchProspects()" style="font-size:11px;padding:5px 12px;border-radius:6px;background:var(--gd);color:#5DCAA5;border:1px solid rgba(29,158,117,0.3);cursor:pointer;font-family:var(--f)" id="robin-btn">🎯 Robin — Sök prospekt</button>
+    </div>
     <div id="t-chat" class="view active" style="flex:1;flex-direction:column">
       <div class="msgs" id="msgs-mytime">
         <div class="msg agent">
@@ -783,6 +787,64 @@ async function approveDraft(draftId, to, subject, html) {
     btn.textContent = 'Fel — försök igen';
     btn.disabled = false;
   }
+}
+
+async function alexAnalyzeMytime() {
+  const btn = document.getElementById('alex-btn');
+  btn.textContent = '⏳ Alex loggar in...';
+  btn.disabled = true;
+  
+  const msgsId = 'msgs-mytime';
+  addMsg(msgsId, 'agent', 'Jag loggar in på My-time nu och analyserar vad som finns där...', 'Alex — Dev', 'A', '#1D9E7522', '#1D9E75');
+  
+  try {
+    const res = await fetch(`${BASE}/api/fetch-mytime`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({}) });
+    const data = await res.json();
+    
+    if (data.error) throw new Error(data.error);
+    
+    if (data.screenshot) {
+      const img = document.createElement('div');
+      img.className = 'msg agent';
+      img.innerHTML = `<div class="mav" style="background:#1D9E7522;color:#1D9E75">A</div><div><div class="mname">Alex — Skärmdump från My-time</div><img src="data:image/png;base64,${data.screenshot}" style="max-width:460px;border-radius:8px;border:1px solid var(--b1);margin-top:6px"><div class="mtime">${now()}</div></div>`;
+      document.getElementById(msgsId).appendChild(img);
+    }
+    
+    addMsg(msgsId, 'agent', data.alex, 'Alex — Teknisk analys', 'A', '#1D9E7522', '#1D9E75');
+    addMsg(msgsId, 'agent', data.maya, 'Maya — Strategisk analys', 'M', '#1D9E7522', '#1D9E75');
+    addMsg(msgsId, 'agent', data.sam, 'Sam — Sammanfattning till Iris', 'S', '#534AB722', '#7F77DD');
+    
+    document.getElementById(msgsId).scrollTop = document.getElementById(msgsId).scrollHeight;
+  } catch(e) {
+    addMsg(msgsId, 'agent', `Alex kunde inte logga in: ${e.message}`, 'Alex', 'A', '#1D9E7522', '#1D9E75');
+  }
+  
+  btn.textContent = '🔍 Alex — Analysera My-time nu';
+  btn.disabled = false;
+}
+
+async function robinSearchProspects() {
+  const btn = document.getElementById('robin-btn');
+  btn.textContent = '⏳ Robin söker...';
+  btn.disabled = true;
+  
+  const msgsId = 'msgs-mytime';
+  addMsg(msgsId, 'agent', 'Söker efter potentiella kunder för My-time...', 'Robin — Tillväxt', 'R', '#1D9E7522', '#1D9E75');
+  
+  try {
+    const res = await fetch(`${BASE}/api/search-prospects`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ query: 'småföretag tidsrapportering verktyg Sverige' })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    addMsg(msgsId, 'agent', data.robin, 'Robin — Prospektanalys', 'R', '#1D9E7522', '#1D9E75');
+  } catch(e) {
+    addMsg(msgsId, 'agent', `Robin stötte på problem: ${e.message}`, 'Robin', 'R', '#1D9E7522', '#1D9E75');
+  }
+  
+  btn.textContent = '🎯 Robin — Sök prospekt';
+  btn.disabled = false;
 }
 
 function closeModal(e){if(e.target===document.getElementById('modal'))document.getElementById('modal').classList.remove('open')}
