@@ -324,6 +324,136 @@ app.post('/api/notion/update', async (req, res) => {
   }
 });
 
+// PLAYWRIGHT: Alex loggar in på My-time och hämtar data
+async function alexFetchMyTime() {
+  const { chromium } = require('playwright');
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage();
+  
+  try {
+    console.log('Alex: Loggar in på My-time...');
+    await page.goto(process.env.MYTIME_URL || 'https://my-time.se/login');
+    await page.waitForLoadState('networkidle');
+    
+    // Logga in
+    const emailField = await page.$('input[type="email"], input[name="email"], input[placeholder*="email" i]');
+    const passField = await page.$('input[type="password"]');
+    
+    if (emailField && passField) {
+      await emailField.fill(process.env.MYTIME_EMAIL || '');
+      await passField.fill(process.env.MYTIME_PASSWORD || '');
+      await page.keyboard.press('Enter');
+      await page.waitForLoadState('networkidle');
+      console.log('Alex: Inloggad!');
+    }
+
+    // Ta skärmdump
+    const screenshot = await page.screenshot({ encoding: 'base64', fullPage: false });
+    
+    // Hämta sidans text för analys
+    const pageText = await page.evaluate(() => document.body.innerText);
+    const pageUrl = page.url();
+    const title = await page.title();
+
+    // Hämta alla synliga siffror och statistik
+    const stats = await page.evaluate(() => {
+      const numbers = [];
+      document.querySelectorAll('h1,h2,h3,p,span,div').forEach(el => {
+        const text = el.innerText?.trim();
+        if (text && /\d/.test(text) && text.length < 100) {
+          numbers.push(text);
+        }
+      });
+      return [...new Set(numbers)].slice(0, 30);
+    });
+
+    await browser.close();
+    return { success: true, url: pageUrl, title, pageText: pageText.slice(0, 2000), stats, screenshot };
+  } catch(e) {
+    await browser.close();
+    throw e;
+  }
+}
+
+// ENDPOINT: Alex hämtar My-time data
+app.post('/api/fetch-mytime', async (req, res) => {
+  try {
+    console.log('Alex: Startar My-time analys...');
+    const data = await alexFetchMyTime();
+    
+    // Låt Alex analysera vad han ser
+    const alexAnalysis = await callClaude(AGENTS.alex.system, [{
+      role: 'user',
+      content: `Du har loggat in på My-time. Här är vad du ser:
+URL: ${data.url}
+Titel: ${data.title}
+Sidinnehåll: ${data.pageText}
+Synlig statistik: ${data.stats.join(', ')}
+
+Analysera: Hur många användare finns? Vad ser du för data? Vad behöver förbättras? Vilka är de viktigaste insikterna?`
+    }], 800);
+
+    // Låt Maya göra strategisk analys
+    const mayaAnalysis = await callClaude(AGENTS.maya.system, [{
+      role: 'user', 
+      content: `Alex har hämtat data från My-time: ${alexAnalysis}. Gör en kort strategisk analys: konverteringsmöjligheter, prioriterade förbättringar för att nå första betalande kunden.`
+    }], 500);
+
+    // Sam sammanfattar
+    const samSummary = await callClaude(AGENTS.sam.system, [{
+      role: 'user',
+      content: `Sammanfatta detta till Iris:
+Alex: ${alexAnalysis}
+Maya: ${mayaAnalysis}`
+    }], 400);
+
+    res.json({ 
+      success: true, 
+      screenshot: data.screenshot,
+      alex: alexAnalysis, 
+      maya: mayaAnalysis,
+      sam: samSummary,
+      rawData: { url: data.url, title: data.title, stats: data.stats }
+    });
+  } catch(e) {
+    console.error('Playwright error:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ENDPOINT: Alex söker prospekt online
+app.post('/api/search-prospects', async (req, res) => {
+  try {
+    const { query } = req.body;
+    const { chromium } = require('playwright');
+    const browser = await chromium.launch({ headless: true });
+    const page = await browser.newPage();
+    
+    await page.goto(`https://www.google.com/search?q=${encodeURIComponent(query || 'småföretag tidsrapportering Sverige')}`);
+    await page.waitForLoadState('networkidle');
+    
+    const results = await page.evaluate(() => {
+      const items = [];
+      document.querySelectorAll('h3').forEach(h => {
+        const text = h.innerText?.trim();
+        if (text && text.length > 5) items.push(text);
+      });
+      return items.slice(0, 10);
+    });
+    
+    await browser.close();
+
+    const robinAnalysis = await callClaude(AGENTS.robin.system, [{
+      role: 'user',
+      content: `Sökresultat för "${query}": ${results.join(', ')}. Analysera och ge konkreta förslag på prospekt och kanaler för My-time.`
+    }], 500);
+
+    res.json({ success: true, results, robin: robinAnalysis });
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 app.get('/health', (req, res) => res.json({
   status: 'Iris är online',
   agents: Object.keys(AGENTS).length,
