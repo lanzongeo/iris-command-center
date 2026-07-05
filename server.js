@@ -201,6 +201,96 @@ Håll återkopplingen under 120 ord. Bara det som spelar roll.`,
   }
 };
 
+
+// Notion-sidor för agentminne
+const MEMORY_PAGES = {
+  iris: process.env.NOTION_MEMORY_IRIS,
+  sam:  process.env.NOTION_MEMORY_SAM,
+  alex: process.env.NOTION_MEMORY_ALEX
+};
+
+// Läs agentens minne från Notion
+async function readAgentMemory(agentKey) {
+  const pageId = MEMORY_PAGES[agentKey];
+  if (!pageId || !NOTION_KEY) return '';
+  return new Promise((resolve) => {
+    const options = {
+      hostname: 'api.notion.com',
+      path: `/v1/blocks/${pageId}/children?page_size=100`,
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${NOTION_KEY}`, 'Notion-Version': '2022-06-28' }
+    };
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          const parsed = JSON.parse(data);
+          const text = (parsed.results || [])
+            .filter(b => b.type === 'paragraph')
+            .map(b => b.paragraph.rich_text.map(t => t.plain_text).join(''))
+            .filter(t => t.trim())
+            .join('\n');
+          resolve(text);
+        } catch(e) { resolve(''); }
+      });
+    });
+    req.on('error', () => resolve(''));
+    req.end();
+  });
+}
+
+// Lägg till minnesfakta i Notion
+async function appendAgentMemory(agentKey, text) {
+  const pageId = MEMORY_PAGES[agentKey];
+  if (!pageId || !NOTION_KEY || !text) return;
+  const datum = new Date().toISOString().split('T')[0];
+  const body = JSON.stringify({
+    children: [{ object: 'block', type: 'paragraph', paragraph: {
+      rich_text: [{ text: { content: `[${datum}] ${text}` } }]
+    }}]
+  });
+  return new Promise((resolve) => {
+    const options = {
+      hostname: 'api.notion.com',
+      path: `/v1/blocks/${pageId}/children`,
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${NOTION_KEY}`,
+        'Content-Type': 'application/json',
+        'Notion-Version': '2022-06-28',
+        'Content-Length': Buffer.byteLength(body)
+      }
+    };
+    const req = https.request(options, (res) => { res.on('data', ()=>{}); res.on('end', resolve); });
+    req.on('error', () => resolve());
+    req.write(body);
+    req.end();
+  });
+}
+
+// Extrahera och spara viktig minnesfakta från ett samtal
+async function extractAndSaveMemory(agentKey, userMessage, agentReply) {
+  try {
+    const fact = await callClaude(
+      'Du är ett minnessystem. Extrahera EN kort minnesfakta (max 25 ord) som är viktig att komma ihåg. Om inget viktigt hände, svara exakt: INGET',
+      [{ role: 'user', content: `Användare: ${String(userMessage).slice(0, 300)}\nAgent: ${String(agentReply).slice(0, 300)}\n\nMinnefakta:` }],
+      80
+    );
+    if (fact && !fact.includes('INGET')) {
+      await appendAgentMemory(agentKey, fact.trim());
+    }
+  } catch(e) { console.error('Memory error:', e.message); }
+}
+
+// Bygg systemprompt med injicerat minne
+async function systemWithMemory(agentKey) {
+  const base = AGENTS[agentKey]?.system || AGENTS.iris.system;
+  const memory = await readAgentMemory(agentKey);
+  if (!memory) return base;
+  return base + `\n\nDITT MINNE (vad du vet sedan tidigare):\n${memory}`;
+}
+
 // Anropa Claude API
 async function callClaude(system, messages, maxTokens = 1000) {
   return new Promise((resolve, reject) => {
@@ -314,9 +404,11 @@ function findAgent(name) {
 app.post('/api/chat', async (req, res) => {
   try {
     const { messages, system } = req.body;
-    const activeSystem = system || AGENTS.iris.system;
     const cleanMessages = (messages || []).filter(m => m && m.content && String(m.content).trim() !== '');
+    const activeSystem = system ? system : await systemWithMemory('iris');
     const irisReply = await callClaude(activeSystem, cleanMessages);
+    const lastUserMsg = cleanMessages.filter(m => m.role === 'user').pop()?.content || '';
+    extractAndSaveMemory('iris', lastUserMsg, irisReply).catch(() => {});
     const delegations = parseDelegations(irisReply);
     const agentResponses = [];
 
@@ -326,7 +418,9 @@ app.post('/api/chat', async (req, res) => {
         if (!agentKey) return null;
         const agent = AGENTS[agentKey];
         try {
-          const reply = await callClaude(agent.system, [{ role: 'user', content: `Instruktion: ${del.task}` }], 500);
+          const agentSystem = await systemWithMemory(agentKey);
+          const reply = await callClaude(agentSystem, [{ role: 'user', content: `Instruktion: ${del.task}` }], 500);
+          extractAndSaveMemory(agentKey, del.task, reply).catch(() => {});
           return { key: agentKey, name: agent.name, role: agent.role, reply };
         } catch(e) {
           return { key: agentKey, name: agent.name, role: agent.role, reply: 'Kunde inte svara just nu.' };
