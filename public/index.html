@@ -232,7 +232,7 @@ textarea::placeholder{color:var(--t3)}
 .proj-metric-v{font-size:22px;font-weight:700;line-height:1}
 .proj-metric-l{font-size:10px;color:var(--t3);margin-top:3px}
 .proj-metric-t{font-size:10px;margin-top:3px}
-.proj-body{display:flex;flex:1;overflow:hidden;flex-direction:row-reverse}
+.proj-body{display:grid;grid-template-columns:1fr 1fr 1fr;flex:1;overflow:hidden}
 .proj-left{flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--b1)}
 .proj-right{width:260px;display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
 .proj-section{padding:12px 16px;border-bottom:1px solid var(--b1);font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;justify-content:space-between}
@@ -474,8 +474,8 @@ textarea::placeholder{color:var(--t3)}
           </div>
         </div>
 
-        <!-- Höger: Team + chatt -->
-        <div class="proj-right" style="display:flex;flex-direction:column">
+        <!-- Kolumn 1: Team -->
+        <div class="proj-team">
           <div class="proj-section"><span>Team</span></div>
           <div class="team-list">
             <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#534AB722;color:#7F77DD;width:28px;height:28px;font-size:10px">S</div><div><div class="an">Sam</div><div class="ar" style="font-size:10px">Projektchef</div></div></div><div class="badge ba">Aktiv</div></div>
@@ -484,6 +484,10 @@ textarea::placeholder{color:var(--t3)}
             <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75;width:28px;height:28px;font-size:10px">L</div><div><div class="an">Lina</div><div class="ar" style="font-size:10px">Content</div></div></div><div class="badge bv">Väntar</div></div>
             <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75;width:28px;height:28px;font-size:10px">R</div><div><div class="an">Robin</div><div class="ar" style="font-size:10px">Tillväxt</div></div></div><div class="badge bw">Jobbar</div></div>
           </div>
+        </div>
+
+        <!-- Kolumn 2: Chatt -->
+        <div class="proj-chat">
           <div class="proj-section"><span>Chatt med Sam</span></div>
           <div class="msgs" id="msgs-mytime" style="flex:1;padding:10px 14px;gap:10px">
             <div class="msg agent">
@@ -534,7 +538,7 @@ textarea::placeholder{color:var(--t3)}
           <div class="proj-section"><span>Avklarade uppgifter</span><span style="color:#5DCAA5">0 klara</span></div>
           <div class="done-list"><div style="font-size:11px;color:var(--t3);padding:6px 0;text-align:center">Inga avklarade uppgifter än</div></div>
         </div>
-        <div class="proj-right" style="display:flex;flex-direction:column">
+        <div class="proj-team">
           <div class="proj-section"><span>Team</span></div>
           <div class="team-list">
             <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75;width:28px;height:28px;font-size:10px">L</div><div><div class="an">Leo</div><div class="ar" style="font-size:10px">Projektchef</div></div></div><div class="badge ba">Aktiv</div></div>
@@ -543,6 +547,8 @@ textarea::placeholder{color:var(--t3)}
             <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75;width:28px;height:28px;font-size:10px">N</div><div><div class="an">Nyx</div><div class="ar" style="font-size:10px">Content</div></div></div><div class="badge bv">Väntar</div></div>
             <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#1D9E7522;color:#1D9E75;width:28px;height:28px;font-size:10px">C</div><div><div class="an">Cato</div><div class="ar" style="font-size:10px">Tillväxt</div></div></div><div class="badge bv">Väntar</div></div>
           </div>
+        </div>
+        <div class="proj-chat">
           <div class="proj-section"><span>Chatt med Leo</span></div>
           <div class="msgs" id="msgs-team2wear" style="flex:1;padding:10px 14px;gap:10px">
             <div class="msg agent"><div class="mav" style="background:#1D9E7522;color:#1D9E75">L</div><div><div class="mname">Leo</div><div class="bub">Redo. Vad behöver du?</div><div class="mtime">Nu</div></div></div>
@@ -585,7 +591,7 @@ textarea::placeholder{color:var(--t3)}
           <div class="proj-section"><span>Avklarade uppgifter</span><span style="color:#5DCAA5">0 klara</span></div>
           <div class="done-list"><div style="font-size:11px;color:var(--t3);padding:6px 0;text-align:center">Inga avklarade uppgifter än</div></div>
         </div>
-        <div class="proj-right" style="display:flex;flex-direction:column">
+        <div class="proj-team">
           <div class="proj-section"><span>Team</span></div>
           <div class="team-list">
             <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517;width:28px;height:28px;font-size:10px">V</div><div><div class="an">Vera</div><div class="ar" style="font-size:10px">Projektchef</div></div></div><div class="badge ba">Aktiv</div></div>
@@ -594,6 +600,8 @@ textarea::placeholder{color:var(--t3)}
             <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517;width:28px;height:28px;font-size:10px">L</div><div><div class="an">Lyra</div><div class="ar" style="font-size:10px">Content</div></div></div><div class="badge bv">Väntar</div></div>
             <div class="ac" style="margin:0"><div class="ai"><div class="aav" style="background:#BA751722;color:#BA7517;width:28px;height:28px;font-size:10px">Z</div><div><div class="an">Zeno</div><div class="ar" style="font-size:10px">Tillväxt</div></div></div><div class="badge bw">Jobbar</div></div>
           </div>
+        </div>
+        <div class="proj-chat">
           <div class="proj-section"><span>Chatt med Vera</span></div>
           <div class="msgs" id="msgs-iso" style="flex:1;padding:10px 14px;gap:10px">
             <div class="msg agent"><div class="mav" style="background:#BA751722;color:#BA7517">V</div><div><div class="mname">Vera</div><div class="bub">Redo. Vad behöver du?</div><div class="mtime">Nu</div></div></div>
