@@ -1,5 +1,0 @@
-[build]
-nixPackages = ["chromium"]
-
-[deploy]
-startCommand = "node server.js"
