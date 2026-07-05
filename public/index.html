@@ -172,6 +172,42 @@ textarea::placeholder{color:var(--t3)}
   .sb-head{justify-content:center;padding:12px 8px}
   .ni{justify-content:center;padding:8px}
 }
+
+/* DASHBOARD */
+.dash{display:flex;gap:10px;padding:12px 20px;border-bottom:1px solid var(--b1);background:var(--bg);flex-shrink:0;overflow-x:auto}
+.dash::-webkit-scrollbar{height:3px}
+.dash::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+
+/* Iris profilkort */
+.iris-card{background:var(--s2);border:1px solid var(--im);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;min-width:200px;flex-shrink:0}
+.iris-head{display:flex;align-items:center;gap:10px}
+.iris-av{width:38px;height:38px;border-radius:50%;background:var(--id);border:2px solid var(--iris);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#a09ae8;flex-shrink:0}
+.iris-name{font-size:13px;font-weight:600;color:var(--t1)}
+.iris-role{font-size:10px;color:var(--t3);margin-top:1px}
+.iris-online{display:flex;align-items:center;gap:4px;font-size:10px;color:#5DCAA5;margin-top:2px}
+.iris-online-dot{width:5px;height:5px;border-radius:50%;background:#1D9E75}
+.iris-kpis{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.iris-kpi{background:var(--s3);border-radius:6px;padding:5px 8px}
+.iris-kpi-v{font-size:16px;font-weight:700;color:#a09ae8;line-height:1}
+.iris-kpi-l{font-size:9px;color:var(--t3);margin-top:2px}
+.iris-actions{display:flex;gap:4px}
+.iris-action{flex:1;font-size:10px;padding:4px 6px;border-radius:5px;border:1px solid var(--b2);background:none;color:var(--t2);cursor:pointer;font-family:var(--f);text-align:center;transition:all .12s}
+.iris-action:hover{border-color:var(--iris);color:#a09ae8}
+.iris-action.primary{background:var(--id);border-color:var(--im);color:#a09ae8}
+
+/* Projekt KPI-kort */
+.proj-kpi{background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:12px 14px;min-width:175px;flex-shrink:0;display:flex;flex-direction:column;gap:8px}
+.proj-kpi-head{display:flex;align-items:center;justify-content:space-between}
+.proj-kpi-name{font-size:12px;font-weight:600;color:var(--t1)}
+.proj-kpi-badge{font-size:9px;padding:2px 7px;border-radius:10px}
+.proj-kpi-metrics{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.pkm{background:var(--s3);border-radius:6px;padding:5px 8px}
+.pkm-v{font-size:18px;font-weight:700;line-height:1}
+.pkm-l{font-size:9px;color:var(--t3);margin-top:2px}
+.proj-kpi-bar{margin-top:2px}
+.proj-kpi-bar-label{display:flex;justify-content:space-between;font-size:9px;color:var(--t3);margin-bottom:4px}
+.proj-kpi-bar-track{height:3px;background:var(--s3);border-radius:2px;overflow:hidden}
+.proj-kpi-bar-fill{height:100%;border-radius:2px}
 </style>
 </head>
 <body>
@@ -238,6 +274,87 @@ textarea::placeholder{color:var(--t3)}
 
   <!-- LEDNINGSRUM -->
   <div id="v-ledning" class="view active" style="flex-direction:column">
+
+    <!-- DASHBOARD: Iris + KPIs -->
+    <div class="dash" id="dash">
+
+      <!-- Iris profilkort -->
+      <div class="iris-card">
+        <div class="iris-head">
+          <img src="/iris.jpg" style="width:38px;height:38px;border-radius:50%;border:2px solid #7F77DD;object-fit:cover;flex-shrink:0" alt="Iris">
+          <div>
+            <div class="iris-name">Iris</div>
+            <div class="iris-role">Chief of Staff · Cirera</div>
+            <div class="iris-online"><div class="iris-online-dot"></div>Online</div>
+          </div>
+        </div>
+        <div class="iris-kpis">
+          <div class="iris-kpi"><div class="iris-kpi-v">3</div><div class="iris-kpi-l">Aktiva projekt</div></div>
+          <div class="iris-kpi"><div class="iris-kpi-v" id="iris-memory-count">—</div><div class="iris-kpi-l">Minnesfakta</div></div>
+          <div class="iris-kpi"><div class="iris-kpi-v" id="iris-msg-count">0</div><div class="iris-kpi-l">Frågor idag</div></div>
+          <div class="iris-kpi"><div class="iris-kpi-v">16</div><div class="iris-kpi-l">Agenter totalt</div></div>
+        </div>
+        <div class="iris-actions">
+          <button class="iris-action primary" onclick="document.getElementById('inp').focus()">Skriv till Iris</button>
+          <button class="iris-action" onclick="showView('personal',null)">Team</button>
+        </div>
+      </div>
+
+      <!-- My-time KPI -->
+      <div class="proj-kpi">
+        <div class="proj-kpi-head">
+          <span class="proj-kpi-name">My-time</span>
+          <span class="proj-kpi-badge" style="background:var(--id);color:#a09ae8">Aktiv</span>
+        </div>
+        <div class="proj-kpi-metrics">
+          <div class="pkm"><div class="pkm-v" style="color:#a09ae8">25</div><div class="pkm-l">Användare</div></div>
+          <div class="pkm"><div class="pkm-v" style="color:#5DCAA5">2</div><div class="pkm-l">Testkunder</div></div>
+          <div class="pkm"><div class="pkm-v" style="color:#EF9F27">0</div><div class="pkm-l">Betalande</div></div>
+          <div class="pkm"><div class="pkm-v" style="color:var(--t2)">30d</div><div class="pkm-l">Till mål</div></div>
+        </div>
+        <div class="proj-kpi-bar">
+          <div class="proj-kpi-bar-label"><span>Mot 1 betalande kund</span><span>0%</span></div>
+          <div class="proj-kpi-bar-track"><div class="proj-kpi-bar-fill" style="width:5%;background:#7F77DD"></div></div>
+        </div>
+      </div>
+
+      <!-- Team2wear KPI -->
+      <div class="proj-kpi">
+        <div class="proj-kpi-head">
+          <span class="proj-kpi-name">Team2wear</span>
+          <span class="proj-kpi-badge" style="background:var(--gd);color:#5DCAA5">Byggs</span>
+        </div>
+        <div class="proj-kpi-metrics">
+          <div class="pkm"><div class="pkm-v" style="color:#5DCAA5">5</div><div class="pkm-l">Agenter</div></div>
+          <div class="pkm"><div class="pkm-v" style="color:var(--t2)">0</div><div class="pkm-l">Beställningar</div></div>
+          <div class="pkm"><div class="pkm-v" style="color:#EF9F27">Lovable</div><div class="pkm-l">Platform</div></div>
+          <div class="pkm"><div class="pkm-v" style="color:var(--t2)">—</div><div class="pkm-l">Launch</div></div>
+        </div>
+        <div class="proj-kpi-bar">
+          <div class="proj-kpi-bar-label"><span>Mot första beställning</span><span>10%</span></div>
+          <div class="proj-kpi-bar-track"><div class="proj-kpi-bar-fill" style="width:10%;background:#1D9E75"></div></div>
+        </div>
+      </div>
+
+      <!-- ISO KPI -->
+      <div class="proj-kpi">
+        <div class="proj-kpi-head">
+          <span class="proj-kpi-name">ISO-plattformen</span>
+          <span class="proj-kpi-badge" style="background:var(--ad);color:#EF9F27">Tidig fas</span>
+        </div>
+        <div class="proj-kpi-metrics">
+          <div class="pkm"><div class="pkm-v" style="color:#EF9F27">5</div><div class="pkm-l">Agenter</div></div>
+          <div class="pkm"><div class="pkm-v" style="color:var(--t2)">0</div><div class="pkm-l">Pilotkunder</div></div>
+          <div class="pkm"><div class="pkm-v" style="color:var(--t2)">SaaS</div><div class="pkm-l">Typ</div></div>
+          <div class="pkm"><div class="pkm-v" style="color:var(--t2)">—</div><div class="pkm-l">Launch</div></div>
+        </div>
+        <div class="proj-kpi-bar">
+          <div class="proj-kpi-bar-label"><span>Mot första pilotkund</span><span>5%</span></div>
+          <div class="proj-kpi-bar-track"><div class="proj-kpi-bar-fill" style="width:5%;background:#BA7517"></div></div>
+        </div>
+      </div>
+
+    </div>
     <!-- Chiefs bar -->
     <div class="chiefs-bar" id="chiefs-bar">
       <button class="chief-btn all active" onclick="selectChief('all',this)">
@@ -257,7 +374,7 @@ textarea::placeholder{color:var(--t3)}
     <!-- Chat -->
     <div class="msgs" id="msgs">
       <div class="msg agent">
-        <div class="mav" style="background:#7F77DD22;color:#a09ae8">I</div>
+        <img src="/iris.jpg" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0" alt="I">
         <div>
           <div class="mname">Iris — Chief of Staff</div>
           <div class="bub">
@@ -445,6 +562,7 @@ let projHistories = { mytime: [], team2wear: [], iso: [] };
 
 // SEND till ledningsrum
 async function send() {
+  incrementIrisCount();
   const inp = document.getElementById('inp');
   const text = inp.value.trim();
   if (!text || loading) return;
@@ -845,6 +963,15 @@ async function robinSearchProspects() {
   
   btn.textContent = '🎯 Robin — Sök prospekt';
   btn.disabled = false;
+}
+
+
+// Uppdatera Iris-meddelanderäknare
+let irisToday = 0;
+function incrementIrisCount() {
+  irisToday++;
+  const el = document.getElementById('iris-msg-count');
+  if (el) el.textContent = irisToday;
 }
 
 function closeModal(e){if(e.target===document.getElementById('modal'))document.getElementById('modal').classList.remove('open')}
