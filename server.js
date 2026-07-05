@@ -1,3 +1,4 @@
+const nodemailer = require('nodemailer');
 const express = require('express');
 const cors = require('cors');
 const https = require('https');
@@ -325,8 +326,16 @@ app.post('/api/notion/update', async (req, res) => {
 
 // PLAYWRIGHT: Alex loggar in på My-time och hämtar data
 async function alexFetchMyTime() {
-  const { chromium } = require('playwright');
-  const browser = await chromium.launch({ headless: true });
+  const { chromium } = require('playwright-core');
+  const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || 
+    '/nix/store/chromium/bin/chromium' ||
+    '/usr/bin/chromium' || 
+    '/usr/bin/chromium-browser';
+  const browser = await chromium.launch({ 
+    headless: true,
+    executablePath: executablePath,
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+  });
   const page = await browser.newPage();
   
   try {
@@ -424,8 +433,8 @@ Maya: ${mayaAnalysis}`
 app.post('/api/search-prospects', async (req, res) => {
   try {
     const { query } = req.body;
-    const { chromium } = require('playwright');
-    const browser = await chromium.launch({ headless: true });
+    const { chromium } = require('playwright-core');
+    const browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'] });
     const page = await browser.newPage();
     
     await page.goto(`https://www.google.com/search?q=${encodeURIComponent(query || 'småföretag tidsrapportering Sverige')}`);

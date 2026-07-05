@@ -1,2 +1,5 @@
 [build]
-nixPackages = ["chromium", "glib", "nss", "nspr", "dbus", "atk", "cups", "libdrm", "libxkbcommon", "xorg.libX11", "xorg.libXcomposite", "xorg.libXdamage", "xorg.libXext", "xorg.libXfixes", "xorg.libXrandr", "mesa", "expat", "xorg.libxcb", "xorg.libXcursor", "xorg.libXrender", "pango", "cairo", "alsa-lib"]
+nixPackages = ["chromium"]
+
+[deploy]
+startCommand = "node server.js"
