@@ -347,6 +347,9 @@ textarea::placeholder{color:var(--t3)}
           <button class="iris-action primary" onclick="document.getElementById('inp').focus()">Skriv till Iris</button>
           <button class="iris-action" onclick="showView('personal',null)">Team</button>
         </div>
+        <div class="iris-actions">
+          <button class="iris-action" id="briefing-btn" onclick="runBriefingNow()" style="width:100%">Kör briefing nu</button>
+        </div>
       </div>
 
 
@@ -727,7 +730,7 @@ async function send() {
     try {
       const res = await fetch(`${BASE}/api/chat`, {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({messages: histories[key], system: chief.system})
+        body: JSON.stringify({messages: histories[key]})
       });
       const data = await res.json();
       te.remove();
@@ -1150,6 +1153,28 @@ function renderIrisDelegations() {
       </div>
     </div>
   `).join('');
+}
+
+// Kör daglig briefing manuellt
+async function runBriefingNow() {
+  const btn = document.getElementById('briefing-btn');
+  btn.textContent = '⏳ Iris samlar status...';
+  btn.disabled = true;
+
+  addMsg('msgs', 'agent', 'Samlar status från Sam, Leo och Vera...', 'Iris — Chief of Staff', 'I', '#534AB722', '#7F77DD');
+
+  try {
+    const res = await fetch(`${BASE}/api/briefing`, { method: 'POST' });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    addMsg('msgs', 'agent', data.summary || 'Briefing klar men inget svar mottogs.', 'Iris — Chief of Staff', 'I', '#534AB722', '#7F77DD');
+    document.getElementById('msgs').scrollTop = document.getElementById('msgs').scrollHeight;
+  } catch(e) {
+    addMsg('msgs', 'agent', `Kunde inte köra briefing: ${e.message}`, 'Iris — Chief of Staff', 'I', '#534AB722', '#7F77DD');
+  }
+
+  btn.textContent = 'Kör briefing nu';
+  btn.disabled = false;
 }
 
 // Uppdatera Iris-meddelanderäknare
